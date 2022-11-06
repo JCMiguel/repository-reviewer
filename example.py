@@ -58,6 +58,6 @@ if __name__ == "__main__" :
     #repo.add_query_param(args.title,'title')
     #repo.search()
     #repo.validate_dictionary()
-    del repo
+    del repos
 
     print("Fin de ejecución")
