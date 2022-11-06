@@ -8,6 +8,7 @@ from repos import ieee, scopus
 
 # Create the arguments parser
 parser = argparse.ArgumentParser()
+parser.add_argument('--debug', dest='debug', action='store_true', required=False)
 parser.add_argument('--title', dest='title', type=str, required=False)
 parser.add_argument('--abstract', dest='abstract', type=str, required=False)
 parser.add_argument('--from-year', dest='fromYear', type=str, required=False)
@@ -33,15 +34,22 @@ if __name__ == "__main__" :
     else:
         holaMundo(args.title)
     '''
+    if args.debug:
+        print("El debug esta habilitado")
+        __debug_flag = True
+    else:
+        __debug_flag = False
+
 
     print("Cargando archivo de configuración")
     cfg = read_yaml("config.yml") # TODO: Pendiente hacer chequeo de errores
 
     print("Cargando clases de repositorios")
+    #repos = {"scopus": scopus }
     repos = { "ieee": ieee, "scopus": scopus }
     for repo in repos:
         try:
-            id = repos[repo](cfg[repo]['basePath'], cfg[repo]['apikey'])
+            id = repos[repo](cfg[repo]['basePath'], cfg[repo]['apikey'], __debug_flag)
             if id is not None:
                 id.say_hello()
                 id.add_query_param(args.default_query)
@@ -51,13 +59,6 @@ if __name__ == "__main__" :
                 del id
         except Exception:
             traceback.print_exc()
-
-    #repo = ieee(cfg['ieee']['basePath'], cfg['ieee']['apikey'])
-    #repo.add_query_param(args.default_query)
-    #repo.add_query_param(args.fromYear,'from_year')
-    #repo.add_query_param(args.title,'title')
-    #repo.search()
-    #repo.validate_dictionary()
     del repos
 
     print("Fin de ejecución")

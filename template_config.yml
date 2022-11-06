@@ -1,10 +1,10 @@
-IEEE:
-  url: API URL
+ieee:
+  basePath: API URL
   apikey: WRITE YOUR API KEY HERE!
 
-SCOPUS:
-  url: API URL
+scopus:
+  basePath: API URL
   apikey: WRITE YOUR API KEY HERE!
 
-PARAMS:
+params:
   dummy: Another useful params incoming...

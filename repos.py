@@ -10,12 +10,13 @@ class repo(ABC):
     '''
         Abstract class for repository definition.
     '''
-    def __init__(self, basePath:str, apikey:str):
+    def __init__(self, basePath:str, apikey:str, debug:bool=False):
         self.basePath = basePath
         self.apikey = apikey
         self.url = basePath
         self.dictionary = {}
         self.params = {}
+        self.debug = debug
         self.build_dictionary()
         self.validate_dictionary()
         self.add_query_param(apikey,'apikey')
@@ -62,6 +63,10 @@ class repo(ABC):
     def search(self):
         pass
 
+    def debug_enabled(self):
+        print("DEBUG: " + str(self.debug))
+        return self.debug
+
     def add_to_dataframe(self,title:str="", year:str=""):
         self.articles_dataframe.loc[len(self.articles_dataframe)] = [title, type(self).__name__, year]
         pass
@@ -79,8 +84,8 @@ class repo(ABC):
 # Clase dedicada a búsquedas en IEEEXplore
 class ieee(repo):
     '''This is a docstring. I have created a new class'''
-    def __init__(self, basePath:str, apikey:str):
-        super().__init__(basePath, apikey)
+    def __init__(self, basePath:str, apikey:str, debug:bool=False):
+        super().__init__(basePath, apikey, debug)
         print(self.url)
 
     def build_dictionary(self):
@@ -99,8 +104,14 @@ class ieee(repo):
         ans = requests.get(self.url,params=self.params)
         print("DEBUG: " + ans.url)
         records_per_page = int(self.params[self.dictionary['max_records_per_page']])
-        total_records_count = ans.json()['total_records']
-        for art in range(records_per_page*3): #FIXME: Esto es una limitacion para debug- hay que usar total_records_count
+        
+        if self.debug_enabled():
+            print("Limitando cantidad de registros")
+            total_records_count = records_per_page*3
+        else:
+            total_records_count = ans.json()['total_records']
+
+        for art in range(int(total_records_count)):
             if art and art%records_per_page == 0:
                 self.add_query_param(str(art),'first_index')
                 ans = requests.get(self.url,params=self.params)
@@ -115,8 +126,8 @@ class ieee(repo):
 
 # Clase dedicada a búsquedas en Scopus
 class scopus(repo):
-    def __init__(self, basePath: str, apikey: str):
-        super().__init__(basePath, apikey)
+    def __init__(self, basePath: str, apikey: str, debug:bool=False):
+        super().__init__(basePath, apikey, debug)
         print(self.url)
 
     def build_dictionary(self):
@@ -135,8 +146,14 @@ class scopus(repo):
         ans = requests.get(self.url,params=self.params)
         print("DEBUG: " + ans.url)
         records_per_page = int(self.params[self.dictionary['max_records_per_page']])
-        total_records_count = ans.json()['search-results']['opensearch:totalResults']
-        for art in range(records_per_page*3): #FIXME: Esto es una limitacion para debug- hay que usar total_records_count
+
+        if self.debug_enabled():
+            print("Limitando cantidad de registros")
+            total_records_count = records_per_page*3
+        else:
+            total_records_count = ans.json()['search-results']['opensearch:totalResults']
+
+        for art in range(int(total_records_count)):
             if art and art%records_per_page == 0:
                 self.add_query_param(str(art),'first_index')
                 ans = requests.get(self.url,params=self.params)
