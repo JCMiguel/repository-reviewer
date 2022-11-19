@@ -1,10 +1,11 @@
-ieee:
-  basePath: API URL
-  apikey: WRITE YOUR API KEY HERE!
+repos:
+  ieee:
+    basePath: 'https://ieeexploreapi.ieee.org/api/v1/search/articles?parameter'
+    apikey: WRITE YOUR API KEY HERE!
 
-scopus:
-  basePath: API URL
-  apikey: WRITE YOUR API KEY HERE!
+  scopus:
+    basePath: 'https://api.elsevier.com/content/search/scopus?httpAccept=application/json'
+    apikey: WRITE YOUR API KEY HERE!
 
 params:
   dummy: Another useful params incoming...

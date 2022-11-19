@@ -3,3 +3,6 @@ config.yml
 *.csv
 *.sh
 .vscode/
+*.crt
+*.cer
+*.pem

@@ -4,7 +4,7 @@
 import argparse
 import yaml
 import traceback
-from repos import ieee, scopus
+from repos import *
 
 # Create the arguments parser
 parser = argparse.ArgumentParser()
@@ -45,11 +45,13 @@ if __name__ == "__main__" :
     cfg = read_yaml("config.yml") # TODO: Pendiente hacer chequeo de errores
 
     print("Cargando clases de repositorios")
-    #repos = {"scopus": scopus }
-    repos = { "ieee": ieee, "scopus": scopus }
-    for repo in repos:
+    #repos = [ 'ieee', 'scopus' ]
+    #print(globals())
+    for repo in cfg['repos'].keys():
         try:
-            id = repos[repo](cfg[repo]['basePath'], cfg[repo]['apikey'], __debug_flag)
+            # La línea siguiente invoca a la clase dentro del package.
+            # Ejemplo: invoca al constructor ieee() de repos.ieee_def
+            id = getattr(globals()[repo + '_def'], repo)(cfg['repos'][repo]['basePath'], cfg['repos'][repo]['apikey'], __debug_flag)
             if id is not None:
                 id.say_hello()
                 id.add_query_param(args.default_query)
@@ -59,6 +61,6 @@ if __name__ == "__main__" :
                 del id
         except Exception:
             traceback.print_exc()
-    del repos
+    #del repos
 
     print("Fin de ejecución")
