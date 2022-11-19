@@ -3,9 +3,9 @@ import pandas as pd
 from . import abc_def
 
 # Clase dedicada a búsquedas en Scopus
-class scopus(abs_def.repo):
-    def __init__(self, basePath: str, apikey: str, debug:bool=False):
-        super().__init__(basePath, apikey, debug)
+class scopus(abc_def.repo):
+    def __init__(self, repo_params:dict, config_params:dict, debug:bool=False):
+        super().__init__(repo_params, config_params, debug)
         print(self.url)
 
     def build_dictionary(self):

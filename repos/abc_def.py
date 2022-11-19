@@ -10,16 +10,16 @@ class repo(ABC):
     '''
         Abstract class for repository definition.
     '''
-    def __init__(self, basePath:str, apikey:str, debug:bool=False):
-        self.basePath = basePath
-        self.apikey = apikey
-        self.url = basePath
+    def __init__(self, repo_params:dict, config_params:dict, debug:bool=False):
+        self.url = repo_params['basePath']
+        self.apikey = repo_params['apikey']
         self.dictionary = {}
         self.query_params = {}
+        self.config_params = config_params
         self.debug = debug
         self.build_dictionary()
         self.validate_dictionary()
-        self.add_query_param(apikey,'apikey')
+        self.add_query_param(self.apikey,'apikey')
         self.add_query_param('25','max_records_per_page')
         self.articles_dataframe = pd.DataFrame(columns=["Title", "Found in", "Year"])
          
@@ -55,6 +55,15 @@ class repo(ABC):
         self.query_params[self.dictionary[type]] = value
         pass
 
+    def get_config_param(self, name:str):
+        '''
+        '''
+        print(self.config_params)
+        if name in self.config_params.keys():
+            return self.config_params[name]
+        else:
+            return ''
+
     #@abstractmethod
     #def validate_params():
     #    pass
@@ -65,6 +74,8 @@ class repo(ABC):
 
     def debug_enabled(self):
         print("DEBUG: " + str(self.debug))
+        print(self.get_config_param('dummy'))
+        print(self.get_config_param('cosmi'))
         return self.debug
 
     def add_to_dataframe(self,title:str="", year:str=""):

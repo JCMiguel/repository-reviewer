@@ -3,10 +3,10 @@ import pandas as pd
 from . import abc_def
 
 # Clase dedicada a búsquedas en IEEEXplore
-class ieee(abs_def.repo):
+class ieee(abc_def.repo):
     '''This is a docstring. I have created a new class'''
-    def __init__(self, basePath:str, apikey:str,debug:bool=False):
-        super().__init__(basePath, apikey, debug)
+    def __init__(self, repo_params:dict, config_params:dict, debug:bool=False):
+        super().__init__(repo_params, config_params, debug)
         print(self.url)
 
     def build_dictionary(self):
