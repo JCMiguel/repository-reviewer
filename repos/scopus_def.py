@@ -21,7 +21,7 @@ class scopus(abc_def.repo):
         '''Búsqueda e'''
         print("Do real searching in repo...")
         print("DEBUG: " + str(self.query_params))
-        ans = requests.get(self.url,params=self.query_params, verify=False)
+        ans = requests.get(self.url,params=self.query_params, verify=self.get_config_param('validate-certificate'))
         print("DEBUG: " + ans.url)
         records_per_page = int(self.query_params[self.dictionary['max_records_per_page']])
 
@@ -34,7 +34,7 @@ class scopus(abc_def.repo):
         for art in range(int(total_records_count)):
             if art and art%records_per_page == 0:
                 self.add_query_param(str(art),'first_index')
-                ans = requests.get(self.url,params=self.query_params, verify=False)
+                ans = requests.get(self.url,params=self.query_params, verify=self.get_config_param('validate-certificate'))
                 print("DEBUG: " + ans.url)
             #print("Debug:" + str(art) + " of " + str(ans.json()['total_records']))
             #print(' - ' + ans.json()['articles'][art%records_per_page]['title'])

@@ -44,7 +44,7 @@ if __name__ == "__main__" :
     print("Cargando archivo de configuración")
     cfg = read_yaml("config.yml") # TODO: Pendiente hacer chequeo de errores
     #TODO: validar errores en el config.yml. hay que asegurar que exista todo lo necesario.
-    # Ejemplo: basePath, params, apikey, etc.
+    # Ejemplo: url, params, apikey, etc.
     # Y que exista una clase llamada como en el config.yml
 
     print("Cargando clases de repositorios")
@@ -54,14 +54,15 @@ if __name__ == "__main__" :
         try:
             # La línea siguiente invoca a la clase dentro del package.
             # Ejemplo: invoca al constructor ieee() de repos.ieee_def
-            id = getattr(globals()[repo + '_def'], repo)(cfg['repos'][repo], cfg['params'], __debug_flag)
-            if id is not None:
-                id.say_hello()
-                id.add_query_param(args.default_query)
-                id.add_query_param(args.fromYear,'from_year')
-                id.add_query_param(args.title,'title')
-                id.search()
-                del id
+            if cfg['repos'][repo]['enabled'] is True:
+                id = getattr(globals()[repo + '_def'], repo)(cfg['repos'][repo], cfg['params'], __debug_flag)
+                if id is not None:
+                    id.say_hello()
+                    id.add_query_param(args.default_query)
+                    id.add_query_param(args.fromYear,'from_year')
+                    id.add_query_param(args.title,'title')
+                    id.search()
+                    del id
         except Exception:
             traceback.print_exc()
     #del repos

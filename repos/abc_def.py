@@ -11,11 +11,11 @@ class repo(ABC):
         Abstract class for repository definition.
     '''
     def __init__(self, repo_params:dict, config_params:dict, debug:bool=False):
-        self.url = repo_params['basePath']
+        self.url = repo_params['url']
         self.apikey = repo_params['apikey']
         self.dictionary = {}
         self.query_params = {}
-        self.config_params = config_params
+        self.config_params = { 'validate-certificate': True } | config_params # Mezcla de diccionarios
         self.debug = debug
         self.build_dictionary()
         self.validate_dictionary()
@@ -58,7 +58,7 @@ class repo(ABC):
     def get_config_param(self, name:str):
         '''
         '''
-        print(self.config_params)
+        #print(self.config_params)
         if name in self.config_params.keys():
             return self.config_params[name]
         else:
@@ -74,8 +74,6 @@ class repo(ABC):
 
     def debug_enabled(self):
         print("DEBUG: " + str(self.debug))
-        print(self.get_config_param('dummy'))
-        print(self.get_config_param('cosmi'))
         return self.debug
 
     def add_to_dataframe(self,title:str="", year:str=""):

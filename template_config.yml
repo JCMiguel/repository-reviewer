@@ -1,11 +1,14 @@
 repos:
   ieee:
-    basePath: 'https://ieeexploreapi.ieee.org/api/v1/search/articles?parameter'
+    url: 'https://ieeexploreapi.ieee.org/api/v1/search/articles?parameter'
     apikey: WRITE YOUR API KEY HERE!
+    enabled: true
 
   scopus:
-    basePath: 'https://api.elsevier.com/content/search/scopus?httpAccept=application/json'
+    url: 'https://api.elsevier.com/content/search/scopus?httpAccept=application/json'
     apikey: WRITE YOUR API KEY HERE!
+    enabled: true
 
 params:
+  #validate-certificate: false
   dummy: Another useful params incoming...
