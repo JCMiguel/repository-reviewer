@@ -1,1 +1,1 @@
-__all__ = ["abc_def", "ieee_def", "scopus_def"]
+__all__ = ["abc_def", "ieee_def", "scopus_def", "pubmed_def"]

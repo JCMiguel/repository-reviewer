@@ -1,10 +1,15 @@
 #!/usr/bin/python3
 # -*- coding: utf8
 
-import argparse
-import yaml
-import traceback
-from repos import *
+try:
+    import traceback
+    import argparse
+    import yaml
+    from repos import *
+except:
+    traceback.print_exc()
+    print('[HINT]:\n\tMake sure all dependencies are fulfilled. To install updates you may run...\n\t> "pip install -r requirements.txt"\n')
+    exit()
 
 # Create the arguments parser
 parser = argparse.ArgumentParser()

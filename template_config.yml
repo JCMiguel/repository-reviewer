@@ -10,5 +10,8 @@ repos:
     enabled: true
 
 params:
+  tool-name: repository-reviewer
+  version: 0.1.2
+  #email: xxx@mail.com  
   #validate-certificate: false
   dummy: Another useful params incoming...
