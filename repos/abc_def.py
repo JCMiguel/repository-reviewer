@@ -2,6 +2,8 @@
 # -*- coding: utf8
 
 import requests
+import logging
+import logging.config
 import pandas as pd
 from abc import ABC, abstractmethod
 
@@ -22,7 +24,13 @@ class repo(ABC):
         self.add_query_param(self.apikey,'apikey')
         self.add_query_param('25','max_records_per_page')
         self.articles_dataframe = pd.DataFrame(columns=["Title", "Found in", "Year"])
-         
+        
+        # Config de Logs
+        logging.config.dictConfig(self.config_params['logs'])
+        if "logger" in repo_params:
+            self.logger = logging.getLogger(repo_params['logger'])
+        else:
+            self.logger = logging.getLogger('root')
 
     @abstractmethod
     def build_dictionary(self):
@@ -73,7 +81,7 @@ class repo(ABC):
         pass
 
     def debug_enabled(self):
-        print("DEBUG: " + str(self.debug))
+        self.logger.debug(str(self.debug))
         return self.debug
 
     def add_to_dataframe(self,title:str="", year:str=""):
@@ -82,7 +90,7 @@ class repo(ABC):
 
 
     def say_hello(self):
-        print("Hola! Soy " + type(self).__name__)
+        self.logger.debug("Hola! Soy " + type(self).__name__)
 
     def export_csv(self):
         self.articles_dataframe.to_csv('table_articles.csv', encoding='utf-8')
