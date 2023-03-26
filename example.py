@@ -3,6 +3,8 @@
 
 import argparse
 import yaml
+import logging
+import logging.config
 import traceback
 from repos import *
 
@@ -46,6 +48,12 @@ if __name__ == "__main__" :
     #TODO: validar errores en el config.yml. hay que asegurar que exista todo lo necesario.
     # Ejemplo: url, params, apikey, etc.
     # Y que exista una clase llamada como en el config.yml
+
+    # FIXME: Deberia borrar esto porque fue una prueba
+    # # Cargamos el diccionario
+    #logging.config.dictConfig((cfg['params'])['logs'])
+    # # Creamos el logger definido en el archivo de configuraci�n
+    #logger = logging.getLogger('Logger_Example')
 
     print("Cargando clases de repositorios")
     #repos = [ 'ieee', 'scopus' ]

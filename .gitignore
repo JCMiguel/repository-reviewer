@@ -6,3 +6,4 @@ config.yml
 *.crt
 *.cer
 *.pem
+*.log
