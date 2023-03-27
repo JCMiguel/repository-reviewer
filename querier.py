@@ -22,10 +22,6 @@ def read_yaml(file_path):
     with open(file_path, "r") as f:
         return yaml.safe_load(f)
 
-def holaMundo(name='Mysterious Someone'):
-    print("Hola " + name + " :)")
-
-
 if __name__ == "__main__" :
     args = parser.parse_args()
     
@@ -44,7 +40,7 @@ if __name__ == "__main__" :
 
 
     print("Cargando archivo de configuración")
-    cfg = read_yaml("config.yml") # TODO: Pendiente hacer chequeo de errores
+    cfg = read_yaml("config/querier_config.yml") # TODO: Pendiente hacer chequeo de errores
     #TODO: validar errores en el config.yml. hay que asegurar que exista todo lo necesario.
     # Ejemplo: url, params, apikey, etc.
     # Y que exista una clase llamada como en el config.yml
