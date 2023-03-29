@@ -69,7 +69,10 @@ if __name__ == "__main__" :
                     id.search()
                     del id
         except Exception:
+            #try: TODO: antes de romper intentar generar el CSV
+            #except: pass
             traceback.print_exc()
+    # TODO exportar los dataframes al CSV en este momento y todo de una sola vez
     #del repos
 
     print("Fin de ejecución")
