@@ -1,5 +1,6 @@
+#Exclusion rules
 __pycache__
-config.yml
+*.yml
 *.csv
 *.sh
 .vscode/
@@ -7,3 +8,6 @@ config.yml
 *.cer
 *.pem
 *.log
+
+#Exceptions rules
+!template_*.yml
