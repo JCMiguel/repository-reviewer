@@ -1,9 +1,12 @@
 #Exclusion rules
 __pycache__
+.vscode/
+.venv/
+.idea/
+venv/
 *.yml
 *.csv
 *.sh
-.vscode/
 *.crt
 *.cer
 *.pem

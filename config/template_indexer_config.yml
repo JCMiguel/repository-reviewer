@@ -3,6 +3,10 @@ index:
     description:  'Nombre de archivo'
     type:         'string'
     detail:       ''
+  primary:
+    description:  'Estudio primario'
+    type:         'boolean'
+    detail:       'Flag que indica si el artículo será considerado como un estudio primario'
   title:
     description:  'Título'
     type:         'string'
