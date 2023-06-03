@@ -1,15 +1,10 @@
 #!/usr/bin/python3
 # -*- coding: utf8
 
-try:
-    import traceback
-    import argparse
-    import yaml
-    from repos import *
-except:
-    traceback.print_exc()
-    print('[HINT]:\n\tMake sure all dependencies are fulfilled. To install updates you may run...\n\t> "pip install -r requirements.txt"\n')
-    exit()
+import argparse
+import yaml
+import traceback
+from repos import *
 
 # Create the arguments parser
 parser = argparse.ArgumentParser()
@@ -69,10 +64,7 @@ if __name__ == "__main__" :
                     id.search()
                     del id
         except Exception:
-            #try: TODO: antes de romper intentar generar el CSV
-            #except: pass
             traceback.print_exc()
-    # TODO exportar los dataframes al CSV en este momento y todo de una sola vez
     #del repos
 
     print("Fin de ejecución")

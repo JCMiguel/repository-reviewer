@@ -40,7 +40,7 @@ class repo(ABC):
         elif "from_year" not in self.dictionary:
             raise ValueError("Missing field 'from_year' in " + type(self).__name__ + "'s dictionary!")
         elif "max_records_per_page" not in self.dictionary:
-            raise ValueError("Missing field 'from_year' in " + type(self).__name__ + "'s dictionary!")
+            raise ValueError("Missing field 'max_records_per_page' in " + type(self).__name__ + "'s dictionary!")
         else:
             return True
 
