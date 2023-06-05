@@ -25,7 +25,7 @@ class repo(ABC):
         self.build_dictionary()
         self.validate_dictionary()
         self.add_query_param(self.apikey,'apikey')
-        self.add_query_param('25','max_records_per_page')
+        self.add_query_param('25','max_records_per_page')  #TODO, revisar si esta asignacion es cprrecta aqui. Se debia a un problema de IEEE?
         self.articles_dataframe = pd.DataFrame(columns=["Title", "Found in", "Year"])
         
         # Config de Logs
@@ -51,7 +51,7 @@ class repo(ABC):
         elif "from_year" not in self.dictionary:
             raise ValueError("Missing field 'from_year' in " + type(self).__name__ + "'s dictionary!")
         elif "max_records_per_page" not in self.dictionary:
-            raise ValueError("Missing field 'from_year' in " + type(self).__name__ + "'s dictionary!")
+            raise ValueError("Missing field 'max_records_per_page' in " + type(self).__name__ + "'s dictionary!")
         else:
             return True
 
