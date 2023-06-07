@@ -15,7 +15,8 @@ parser.add_argument('--title', dest='title', type=str, required=False)
 parser.add_argument('--abstract', dest='abstract', type=str, required=False)
 parser.add_argument('--from-year', dest='fromYear', type=str, required=False)
 parser.add_argument('--to-year', dest='toYear', type=str, required=False)
-parser.add_argument('default_query', metavar='query', type=str)
+parser.add_argument('--query', dest='query', type=str, required=False)
+parser.add_argument('default_query', metavar='generic_query', type=str)
 
 
 def read_yaml(file_path):
@@ -24,14 +25,7 @@ def read_yaml(file_path):
 
 if __name__ == "__main__" :
     args = parser.parse_args()
-    
-    '''
-    TODO: Migrar esto a una función que parseé los argumentos.
-    if not args.title:
-        holaMundo()
-    else:
-        holaMundo(args.title)
-    '''
+
     if args.debug:
         print("El debug esta habilitado")
         __debug_flag = True
@@ -48,7 +42,7 @@ if __name__ == "__main__" :
     # FIXME: Deberia borrar esto porque fue una prueba
     # # Cargamos el diccionario
     #logging.config.dictConfig((cfg['params'])['logs'])
-    # # Creamos el logger definido en el archivo de configuraci�n
+    # # Creamos el logger definido en el archivo de configuración
     #logger = logging.getLogger('Logger_Example')
 
     print("Cargando clases de repositorios")
@@ -62,9 +56,13 @@ if __name__ == "__main__" :
                 id = getattr(globals()[repo + '_def'], repo)(cfg['repos'][repo], cfg['params'], __debug_flag)
                 if id is not None:
                     id.say_hello()
-                    id.add_query_param(args.default_query)
-                    id.add_query_param(args.fromYear,'from_year')
-                    id.add_query_param(args.title,'title')
+                    if args.query == "":
+                        id.add_query_param(args.default_query)
+                        id.add_query_param(args.fromYear,'from_year')
+                        id.add_query_param(args.title,'title')
+                    else:
+                        # TODO: Si me funciona con IEEE, tengo que ver cómo hacerlo para scopus.
+                        id.load_query(args.query)
                     id.search()
                     del id
         except Exception:

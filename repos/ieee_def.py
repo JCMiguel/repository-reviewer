@@ -1,4 +1,6 @@
+import urllib.parse
 import requests
+import json
 import pandas as pd
 from . import abc_def
 
@@ -17,12 +19,42 @@ class ieee(abc_def.repo):
         self.dictionary['end_year'] = 'end_year'
         self.dictionary['max_records_per_page'] = 'max_records'
         self.dictionary['first_index'] = 'start_record'
+        self.dictionary['query'] = 'querytext'
+
+    def parse_query(self, query: str) -> str:
+        # TODO: Resolver parseo de Query completa
+        # Quiero llegar a esto:
+        # INPUT:
+        #   querier --query='("title":"xai") AND ("abstract":"histopathology")'
+        # OUTPUT (IEEE):
+        #   querytext=((%0A%22Document%20Title%22:%22xai%22%0A)%0AAND%0A(%0A%22Full%20Text%20Only%22:%22histopathology%22%0A)%0A)
+        # Nota: Buscar por query invalidaría todos los otros argumentos para que no entren en conflicto.
+        query = '{ "title": "xai", "content": "histopathology"}'
+        query_dict = json.loads(query)
+        # * * * FIXME SOME MAGIC HAPPENS HERE * * *
+        parsed_query = '('
+        for element in query_dict.items():
+            parsed_query += '('
+            # FIXME: Esto se puede plantear con un diccionario de conversion {title: Document title, ...}
+            if element[0] == "title":
+                parsed_query += f'"Document Title":{str(element[1])}'
+            elif element[0] == "content":
+                parsed_query += f'"Full Text Only":{str(element[1])}'
+            else:
+                pass
+            parsed_query += ')'
+        parsed_query = parsed_query.replace(')(', ') AND (')
+        parsed_query += ')'
+        print(parsed_query)
+        #query = '(("Document Title":xai) AND ("Full Text Only":histopathology))'
+        return parsed_query
 
     def search(self):
         '''Búsqueda e'''
         self.logger.info("Do real searching in repo...")
         self.logger.debug(str(self.query_params))
-        ans = requests.get(self.url,params=self.query_params, verify=self.get_config_param('validate-certificate'))
+        params = urllib.parse.urlencode(self.query_params, quote_via=urllib.parse.quote)
+        ans = requests.get(self.url,params=params, verify=self.get_config_param('validate-certificate'))
         self.logger.debug(ans.url)
         records_per_page = int(self.query_params[self.dictionary['max_records_per_page']])
         
