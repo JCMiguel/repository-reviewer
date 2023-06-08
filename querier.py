@@ -16,7 +16,7 @@ parser.add_argument('--abstract', dest='abstract', type=str, required=False)
 parser.add_argument('--from-year', dest='fromYear', type=str, required=False)
 parser.add_argument('--to-year', dest='toYear', type=str, required=False)
 parser.add_argument('--query', dest='query', type=str, required=False)
-parser.add_argument('default_query', metavar='generic_query', type=str)
+parser.add_argument('--content', dest='content', type=str, required=False)
 
 
 def read_yaml(file_path):
@@ -57,9 +57,9 @@ if __name__ == "__main__" :
                 if id is not None:
                     id.say_hello()
                     if args.query == "":
-                        id.add_query_param(args.default_query)
-                        id.add_query_param(args.fromYear,'from_year')
-                        id.add_query_param(args.title,'title')
+                        id.add_query_param(args.content, 'content')
+                        id.add_query_param(args.fromYear, 'from_year')
+                        id.add_query_param(args.title, 'title')
                     else:
                         # TODO: Si me funciona con IEEE, tengo que ver cómo hacerlo para scopus.
                         id.load_query(args.query)

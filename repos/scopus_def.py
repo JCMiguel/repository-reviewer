@@ -13,7 +13,7 @@ class scopus(abc_def.repo):
         self.dictionary['apikey'] = 'apikey'
         self.dictionary['title'] = 'title'
         self.dictionary['from_year'] = 'date'
-        self.dictionary['end_year'] = 'end_year'
+        self.dictionary['to_year'] = 'end_year'
         self.dictionary['max_records_per_page'] = 'count'
         self.dictionary['first_index'] = 'start'
 

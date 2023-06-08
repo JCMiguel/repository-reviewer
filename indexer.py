@@ -61,9 +61,10 @@ def input_a_date(message: str) -> str:
     return next(filter(str.isprintable, replies))  # valid_response
 
 
-def input_a_boolean(message: str) -> str:
+def input_a_boolean(message: str) -> bool:
     message = ' > ' + message + '(y/n):\n    '
     done = False
+    ans = ''
     while not done:
         ans = input(message)
         if ans.lower() in ["y", "n"]:
@@ -83,7 +84,7 @@ def input_a_text(message: str) -> str:
     return next(filter(str.isprintable, replies))  # valid_response
 
 
-def input_a_number(message: str) -> int:
+def input_a_number(message: str) -> str:
     message = ' > ' + message + ':\n    '
     bad_input_msg = "El dato debe ser numérico!\n"
     prompts = chain([message], repeat('\n'.join([bad_input_msg, message])))

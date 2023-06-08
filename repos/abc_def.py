@@ -43,11 +43,15 @@ class repo(ABC):
         pass
 
     def validate_dictionary(self):
-        if "default" not in self.dictionary:
+        if "content" not in self.dictionary:
             raise ValueError("Missing field 'default' in " + type(self).__name__ + "'s dictionary!")
         elif "title" not in self.dictionary:
             raise ValueError("Missing field 'title' in " + type(self).__name__ + "'s dictionary!")
+        elif "abstract" not in self.dictionary:
+            raise ValueError("Missing field 'title' in " + type(self).__name__ + "'s dictionary!")
         elif "from_year" not in self.dictionary:
+            raise ValueError("Missing field 'from_year' in " + type(self).__name__ + "'s dictionary!")
+        elif "to_year" not in self.dictionary:
             raise ValueError("Missing field 'from_year' in " + type(self).__name__ + "'s dictionary!")
         elif "max_records_per_page" not in self.dictionary:
             raise ValueError("Missing field 'from_year' in " + type(self).__name__ + "'s dictionary!")
@@ -69,7 +73,7 @@ class repo(ABC):
         self.query_params[self.dictionary['query']] = self.parse_query(query)
         pass
 
-    def add_query_param(self, value: str, value_type: str = 'default') -> None:
+    def add_query_param(self, value: str, value_type: str) -> None:
         """
             This pretends to do a conversion between args and api params
 
