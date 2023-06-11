@@ -43,22 +43,12 @@ class repo(ABC):
         pass
 
     def validate_dictionary(self):
-        if "content" not in self.dictionary:
-            raise ValueError("Missing field 'default' in " + type(self).__name__ + "'s dictionary!")
-        elif "title" not in self.dictionary:
-            raise ValueError("Missing field 'title' in " + type(self).__name__ + "'s dictionary!")
-        elif "abstract" not in self.dictionary:
-            raise ValueError("Missing field 'title' in " + type(self).__name__ + "'s dictionary!")
-        elif "from_year" not in self.dictionary:
-            raise ValueError("Missing field 'from_year' in " + type(self).__name__ + "'s dictionary!")
-        elif "to_year" not in self.dictionary:
-            raise ValueError("Missing field 'from_year' in " + type(self).__name__ + "'s dictionary!")
-        elif "max_records_per_page" not in self.dictionary:
-            raise ValueError("Missing field 'from_year' in " + type(self).__name__ + "'s dictionary!")
-        elif "query" not in self.dictionary:
-            raise ValueError("Missing field 'from_year' in " + type(self).__name__ + "'s dictionary!")
-        else:
-            return True
+        items = ["content", "title", "abstract", "keyword", "from_year",
+                 "to_year", "max_records_per_page", "query"]
+        for item in items:
+            if item not in self.dictionary:
+                raise ValueError(f"Missing field '{item}' in {type(self).__name__}'s dictionary!")
+        return True
 
     @abstractmethod
     def parse_query(self, query: str) -> str:

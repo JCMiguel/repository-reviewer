@@ -56,7 +56,7 @@ if __name__ == "__main__" :
                 id = getattr(globals()[repo + '_def'], repo)(cfg['repos'][repo], cfg['params'], __debug_flag)
                 if id is not None:
                     id.say_hello()
-                    if args.query == "":
+                    if args.query == "" or args.query is None:
                         id.add_query_param(args.content, 'content')
                         id.add_query_param(args.fromYear, 'from_year')
                         id.add_query_param(args.title, 'title')

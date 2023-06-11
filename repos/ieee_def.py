@@ -16,6 +16,7 @@ class ieee(abc_def.repo):
         self.dictionary['content'] = 'metadata'
         self.dictionary['title'] = 'article_title'
         self.dictionary['abstract'] = 'abstract'
+        self.dictionary['keyword'] = 'index_terms'
         self.dictionary['from_year'] = 'start_year'
         self.dictionary['to_year'] = 'end_year'
         self.dictionary['max_records_per_page'] = 'max_records'
