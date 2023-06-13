@@ -1,0 +1,79 @@
+index:
+  file:
+    description:  'Nombre de archivo'
+    type:         'string'
+    detail:       ''
+  primary:
+    description:  'Estudio primario'
+    type:         'boolean'
+    detail:       'Flag que indica si el artículo será considerado como un estudio primario'
+  title:
+    description:  'Título'
+    type:         'string'
+    detail:       'Tìtulo completo del artículo.'
+  author:
+    description:  'Autor(es)'
+    type:         'string'
+    detail:       'Autor(es) del artículo en cuestión.'
+  repo:
+    description:  'Medio de publicación'
+    type:         'string'
+    detail:       'Repositorio en el que fue hallado el artículo.'
+  year:
+    description:  'Año de publicación'
+    type:         'int32'
+    detail:       'Año en el que se publicó el artículo'
+  date:
+    description:  'Fecha de fichaje'
+    type:         'datetime64[ns]'
+    behaviour:    'automatic'
+    detail:       'Fecha en que se registró la ficha.'
+  abstract:
+    description:  'Abstract'
+    type:         'string'
+    detail:       'Abstract del artículo. Se debe ingresar sin saltos de línea adicionales.'
+  keywords:
+    description:  'Palabras clave'
+    type:         'string'
+    detail:       'Palabras clave declaradas en el artículo.'
+  refs:
+    description:  'Referencias importantes'
+    type:         'string'
+    detail:       'Trabajos de otros autores mencionados en la publicación que podrían ser útiles para ampliar el tema.'
+  pros:
+    description:  'Fortalezas'
+    type:         'string'
+    detail:       'Aspectos metodológicos o conceptuales angulares para la investigación.'
+  cons:
+    description:  'Debilidades'
+    type:         'string'
+    detail:       'Aspectos que no están bien desarrollados o no resultan claros.'
+  opps:
+    description:  'Oportunidades'
+    type:         'string'
+    detail:       'Posibles líneas de trabajo para la tesis.'
+     
+
+params:
+  #validate-certificate: false
+  dummy: Another useful params incoming...
+  logs:
+    version: 1
+    formatters:
+      simple:
+        format: "%(asctime)s - %(name)s - %(levelname)s: [%(module)s] %(message)s"
+    handlers:
+      console:
+        class: logging.StreamHandler
+        level: DEBUG
+        formatter: simple
+        stream: ext://sys.stdout
+    loggers:
+      default:
+        level: DEBUG
+        handlers:
+        - console
+        propagate: 'no'
+    root:
+      level: NOTSET
+      handlers: []

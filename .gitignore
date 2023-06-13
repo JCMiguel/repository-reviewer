@@ -1,9 +1,16 @@
+#Exclusion rules
 __pycache__
-config.yml
+.vscode/
+.venv/
+.idea/
+venv/
+*.yml
 *.csv
 *.sh
-.vscode/
 *.crt
 *.cer
 *.pem
 *.log
+
+#Exceptions rules
+!template_*.yml
