@@ -65,21 +65,23 @@ class ieee(abc_def.repo):
         ans = requests.get(self.url,params=params, verify=self.get_config_param('validate-certificate'))
         self.logger.debug(ans.url)
         records_per_page = int(self.query_params[self.dictionary['max_records_per_page']])
-        
+        total_records_count = ans.json()['total_records']
+
         if self.debug_enabled():
             self.logger.warning("Debug activado: Limitando cantidad de registros")
-            total_records_count = records_per_page*3
-        else:
+            # FIXME: En caso de debug total_records_count quedaba en 75 cuando total_records era menor, por lo tanto: "IndexError: list index out of range"
+            total_records_count = min( records_per_page*3, ans.json()['total_records'] )
+        #else:
             #self.logger.debug(ans)
             # FIXME: Hay que agregar un manejo de excepciones aca. La linea siguiente falla si se alcanza el limite diario de fetching
-            total_records_count = ans.json()['total_records']
+            #total_records_count = ans.json()['total_records']
 
         for art in range(int(total_records_count)):
             if art and art%records_per_page == 0:
                 self.add_query_param(str(art),'first_index')
                 ans = requests.get(self.url,params=self.query_params, verify=self.get_config_param('validate-certificate'))
                 self.logger.debug(ans.url)
-            #print("Debug:" + str(art) + " of " + str(ans.json()['total_records']))
+            #print("Debug:" + str(art) + " of " + str(total_records_count) + "/" + str(ans.json()['total_records']) + " -- index: " + str(art%records_per_page) )
             #print(' - ' + ans.json()['articles'][art%records_per_page]['title'])
             self.add_to_dataframe(ans.json()['articles'][art%records_per_page]['title'], ans.json()['articles'][art%records_per_page]['publication_year'])
         self.export_csv()
