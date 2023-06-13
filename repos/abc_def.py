@@ -12,6 +12,9 @@ class repo(ABC):
     '''
         Abstract class for repository definition.
     '''
+    articles_fn = 'table_articles.csv'
+    articles_df = pd.DataFrame(columns=["Title", "Found in", "Year"])
+
     def __init__(self, repo_params:dict, config_params:dict, debug:bool=False):
         self.url = repo_params['url']
         self.apikey = repo_params['apikey']
@@ -93,6 +96,6 @@ class repo(ABC):
         self.logger.debug("Hola! Soy " + type(self).__name__)
 
     def export_csv(self):
-        # BUG: (issue1): Cada vez que se llama a esta función se pisa el archivo con los nuevos datos
-        self.articles_dataframe.to_csv('table_articles.csv', encoding='utf-8')
-        #print("Soy " + type(self).__name__+ ", pero aun no se exportar a CSV! Toy chiquito :3")
+        self.logger.info("{} articles exported".format(len(self.articles_dataframe)))
+        repo.articles_df = repo.articles_df.append( self.articles_dataframe, ignore_index=True, verify_integrity=False)
+        repo.articles_df.to_csv(repo.articles_fn, encoding='utf-8')
