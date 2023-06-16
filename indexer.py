@@ -190,7 +190,7 @@ def save_index_card(args) -> int:
         # Abro el csv con pandas
         fichas = load_dataframe('fichas.csv')
         # FIXME: Esta línea rompe si el archivo existe pero no tiene contenido.
-        new_ficha = pd.DataFrame(new_dict, index=[fichas.index[-1] + 1])
+        new_ficha = pd.DataFrame(new_dict, index=[len(fichas) + 1])
         frames = [fichas, new_ficha]
         fichas = pd.concat(frames)
     else:
