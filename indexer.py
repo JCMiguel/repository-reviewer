@@ -92,8 +92,28 @@ def input_a_number(message: str) -> str:
     return next(filter(str.isdigit, replies))  # valid_response
 
 
+def index_an_article() -> dict:
+    new_dict = dict.fromkeys(__base_dict_df.keys())
+    for item in __base_dict_df.items():
+        item_type = item[1]
+        item_name = item[0]
+        if item_type == 'string':
+            new_dict[item[0]] = input_a_text(item_name)
+        elif item_type == 'int32':
+            new_dict[item[0]] = input_a_number(item_name)
+        elif item_type == 'boolean':
+            new_dict[item[0]] = input_a_boolean(item_name)
+        elif item_type == 'datetime64[ns]':
+            new_dict[item[0]] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        elif item_type == 'automatic':
+            new_dict[item[0]] = ''
+        else:
+            new_dict[item[0]] = input_a_text(item_name)
+    return new_dict
+
+
 def load_dataframe(filename) -> pd.DataFrame:
-    fichas = pd.read_csv(filename, index_col=0)
+    fichas = pd.read_csv(filename, index_col=False)
     fichas = fichas.fillna('')
     return fichas.astype(__base_dict_df)
 
@@ -133,7 +153,14 @@ def edit_index_card(args) -> int:
             item_name = item[0]
             print(f' > {item_name}:\n    {fichas[item_name].values[args.index]}')
         if input_a_boolean("¿Está seguro que desea editar esta ficha?") == True:
-            print("TODO: pendiente hacer menú de edición")
+            new_dict = index_an_article()
+            edited_ficha = pd.DataFrame(new_dict, index=[args.index])
+            edited_ficha.astype(__base_dict_df)
+            print(fichas)
+            print(edited_ficha)
+            fichas.loc[edited_ficha.index, :] = edited_ficha[:]
+            print(fichas)
+            fichas.to_csv('fichas.csv', encoding='utf-8', index=False)
         else:
             print("Cancelando edición")
     else:
@@ -157,7 +184,7 @@ def delete_index_card(args) -> int:
             print(f' > {item_name}:\n    {fichas[item_name].values[args.index]}')
         if input_a_boolean("¿Está seguro que desea eliminar esta ficha?") == True:
             fichas = fichas.drop(labels=args.index, axis=0)
-            fichas.to_csv('fichas.csv', encoding='utf-8')
+            fichas.to_csv('fichas.csv', encoding='utf-8', index=False)
         else:
             print("Cancelando borrado")
     else:
@@ -171,20 +198,7 @@ def save_index_card(args) -> int:
     """
     print('········· Generación de nueva ficha ·········')
     print('Ingrese los datos pedidos a continuación')
-    new_dict = dict.fromkeys(__base_dict_df.keys())
-    for item in __base_dict_df.items():
-        item_type = item[1]
-        item_name = item[0]
-        if item_type == 'string':
-            new_dict[item[0]] = input_a_text(item_name)
-        elif item_type == 'int32':
-            new_dict[item[0]] = input_a_number(item_name)
-        elif item_type == 'boolean':
-            new_dict[item[0]] = input_a_boolean(item_name)
-        elif item_type == 'datetime64[ns]':
-            new_dict[item[0]] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        else:
-            new_dict[item[0]] = input_a_text(item_name)
+    new_dict = index_an_article()
 
     if os.path.isfile('fichas.csv'):
         # Abro el csv con pandas
@@ -197,7 +211,7 @@ def save_index_card(args) -> int:
         fichas = pd.DataFrame(new_dict, index=[0])
         fichas.astype(__base_dict_df)
 
-    fichas.to_csv('fichas.csv', encoding='utf-8')
+    fichas.to_csv('fichas.csv', encoding='utf-8', index=False)
     return 0
 
 
