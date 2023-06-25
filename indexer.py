@@ -118,21 +118,46 @@ def load_dataframe(filename) -> pd.DataFrame:
     return fichas.astype(__base_dict_df)
 
 
+def match_with_filter(args: dict, ficha: pd.DataFrame, index: int) -> bool:
+    match_flag = False
+    # print(args)
+    # print(f'Ficha: {ficha}')
+    allowed_args = ['filename', 'index']
+    # print(ficha.index.values[0])
+    # FIXME: Esto es un primer acercamiento a la búsqueda. Se puede mejorar un montón y hacerlo dinámico
+    if any(item in allowed_args for item in args.keys()):
+        # Se especificó un criterio de búsqueda
+        if 'index' in args.keys() and args['index'] is not None:
+            if args['index'] == str(ficha.index.values[0]):
+                match_flag = True
+        elif 'filename' in args.keys() and args['filename'] is not None:
+            # FIXME: Esta línea rompe el encapsulamiento de __base_dict_df
+            if args['filename'] in str(ficha['Nombre de archivo'].values):
+                match_flag = True
+    else:
+        # Si no se especifica ningún filtro, esta función devuelve siempre
+        # True con el propósito de listar todos los resultados.
+        match_flag = True
+    return match_flag
+
+
 def get_index_card(args) -> int:
     """
         get_index_card
     """
+    # print(f'args: {args}')
     if os.path.isfile('fichas.csv'):
         # Abro el csv con pandas
         fichas = load_dataframe('fichas.csv')
         for i in range(0, len(fichas.index)):
             #TODO: Pendiente agregar un filtro acá en función de algún argumento de ejecución
-            print('----------------------------------------------------')
-            print(f'              FICHA SELECCIONADA - INDEX {i}')
-            print('----------------------------------------------------')
-            for item in __base_dict_df.items():
-                item_name = item[0]
-                print(f' > {item_name}:\n    {fichas[item_name].values[i]}')
+            if match_with_filter(vars(args), fichas.iloc[[i]], i):
+                print('----------------------------------------------------')
+                print(f'              FICHA SELECCIONADA - INDEX {i}')
+                print('----------------------------------------------------')
+                for item in __base_dict_df.items():
+                    item_name = item[0]
+                    print(f' > {item_name}:\n    {fichas[item_name].values[i]}')
     else:
         print("No hay ninguna ficha cargada")
     return 0
@@ -231,12 +256,13 @@ def main() -> int:
 
     # GET
     get_parser = sp.add_parser('get')
-    get_parser.add_argument('filename', metavar='filename', type=str)
+    get_parser.add_argument('--filename', dest='filename', type=str, required=False)
+    get_parser.add_argument('--index', dest='index', type=str, required=False)
     get_parser.set_defaults(func=get_index_card)
 
     # SAVE
     save_parser = sp.add_parser('save')
-    save_parser.add_argument('--to', dest='dest', type=str, required=False)
+    # FIXME?: save_parser.add_argument('--to', dest='dest', type=str, required=False)
     save_parser.set_defaults(func=save_index_card)
 
     # EDIT
@@ -268,7 +294,7 @@ def main() -> int:
     __success_flag = False
 
     print("Fin de ejecución")
-    exit(0)
+    return 0
 
 
 if __name__ == "__main__":
