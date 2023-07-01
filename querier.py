@@ -7,6 +7,7 @@ import logging
 import logging.config
 import traceback
 from repos import *
+from historic import *
 
 # Create the arguments parser
 parser = argparse.ArgumentParser()

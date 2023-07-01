@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf8
 
-from search import Search
+from historic.search import Search
 
 class History:
 
