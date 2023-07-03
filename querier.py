@@ -30,6 +30,7 @@ if __name__ == "__main__" :
     if args.debug:
         print("El debug esta habilitado")
         __debug_flag = True
+        print("ARGUMENTS:\n", args.__dict__)
     else:
         __debug_flag = False
 
@@ -40,15 +41,9 @@ if __name__ == "__main__" :
     # Ejemplo: url, params, apikey, etc.
     # Y que exista una clase llamada como en el config.yml
 
-    # FIXME: Deberia borrar esto porque fue una prueba
-    # # Cargamos el diccionario
-    #logging.config.dictConfig((cfg['params'])['logs'])
-    # # Creamos el logger definido en el archivo de configuración
-    #logger = logging.getLogger('Logger_Example')
+    search_handler = search.Search( args.__dict__ )
 
     print("Cargando clases de repositorios")
-    #repos = [ 'ieee', 'scopus' ]
-    #print(globals())
     for repo in cfg['repos'].keys():
         try:
             # La línea siguiente invoca a la clase dentro del package.
@@ -64,10 +59,11 @@ if __name__ == "__main__" :
                     else:
                         # TODO: Si me funciona con IEEE, tengo que ver cómo hacerlo para scopus.
                         id.load_query(args.query)
-                    id.search()
+                    search_handler.append_partial_res( id.search() )
                     del id
         except Exception:
             traceback.print_exc()
     #del repos
 
+    print( str(search_handler) )
     print("Fin de ejecución")

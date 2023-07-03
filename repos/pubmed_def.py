@@ -79,10 +79,14 @@ class pubmed(abc_def.repo):
         summ = self.__exec_Summary( results, idxs_dict, use_history=True )
         print("DEBUG: results... ", results )
 
+        pub_year_array = []
         articles = summ[pubmed._p_ids_summary]
         for art in articles:
-            self.add_to_dataframe( summ[art]['title'], date_format(summ[art]['pubdate']) )
+            pub_year = date_format(summ[art]['pubdate'])
+            self.add_to_dataframe( summ[art]['title'], pub_year )
+            pub_year_array.append( pub_year )
         self.export_csv()
+        return self.build_report(pub_year_array)
 
 
     def __exec_eSearch(self, index_constraint:dict=None, use_history=False, db='pubmed') -> dict:

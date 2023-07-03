@@ -15,6 +15,9 @@ TIME_DIVISIONS = 3
 
 class Report:
 
+    separator = ', '
+    __time_period = None
+
     def __init__(self, name):
         self._name = name
         self._occurrences = 0 
@@ -27,6 +30,10 @@ class Report:
         r.__dict__ = report_items
         if name: r._name = name
         return r
+
+
+    def get_name_str(self) -> str:
+        return self._name
 
 
     def process_dates(self, publication_dates, time_span:tuple=None):
@@ -68,13 +75,17 @@ class Report:
         return Compound_Report.Import( compound )
 
 
+
+
+
 #   Representation methods
 
     def __repr__(self):
         return str(self.__dict__)
 
     def __str__(self) -> str:
-        return str(self.__repl__())
+        return self._export_to_csv_header() + \
+               self._export_to_csv_line()
     
     def at(self, item_name):
         return self.__dict__[item_name]
@@ -105,21 +116,69 @@ class Report:
 
 
     def _process_dates_distribution(self, years, span:tuple):
-        div_span = (span[1] - span[0]) / TIME_DIVISIONS
-        div_limits = [span[0] + div_span]
-        div_counts = [0]
-        # Establece los limites superiores de cada division de tiempo
-        for i in range(1,TIME_DIVISIONS):
-            div_limits.append( div_limits[-1] + div_span )
-            div_counts.append( 0 )
-        # Reparte todos los articulos en cada division haciendo un recuento
+        if (Report.__time_period is None) or (Report.__time_period == span):
+            Report.__time_period = span
+        else: raise ValueError('There should not be different search periods in the same Report:', span, Report.__time_period)
+        div_limits, div_counts = self._get_periods_arrays(span)
+        # Distribute all the items in each division by making a recount.
         for y in years:
             for i in range(TIME_DIVISIONS):
-                if y < div_limits[i]:
+                if y <= div_limits[i]:
                     div_counts[i] += 1
                     break
         return div_counts
 
+
+    def _export_to_csv_line(self) -> str:
+        out_str = ending_str = ""
+        for item in self.__dict__:
+            value = self.at(item)
+
+            if item == '_name':
+                continue
+            elif item == '_time_div_cont':
+                ending_str = " ({:g}%)"
+            elif item == '_time_div_perc':
+                if len(value) == 0:
+                    self.calculate_percentages()
+                    value = self.at(item)
+                out_str = out_str.format(*value)
+                continue
+
+            if type(value) is list:
+                for element in value:
+                    out_str += str(element) + ending_str + Report.separator
+            else:   out_str += str(value) + ending_str + Report.separator
+            ending_str = ""
+        return out_str[:-len(Report.separator)] + "\n"
+
+
+    def _export_to_csv_header(self) -> str:
+        out_str = ""
+        for item in self.__dict__:
+            if item == '_name':
+                out_str += self.get_name_str() + Report.separator
+            elif item in ['_occurrences', '_time_div_perc']:
+                continue
+            elif item == '_time_div_cont':
+                out_str += str(Report.__time_period[0]) +"-"
+                for i,t in enumerate( self._get_periods_arrays(Report.__time_period)[0] ):
+                    if i == 0: out_str += str(int(t))[-2:] + Report.separator
+                    else:      out_str += "<"+ str(t)[:4] + Report.separator
+            else:
+                out_str += item + Report.separator
+        return  out_str[:-len(Report.separator)] + "\n"
+
+
+    def _get_periods_arrays(self, span:tuple):
+        div_span = (span[1] - span[0]) / TIME_DIVISIONS
+        limits = [span[0] + div_span]
+        counts = [0]
+        # Sets the upper limits of each time division.
+        for i in range(1,TIME_DIVISIONS):
+            limits.append( limits[-1] + div_span )
+            counts.append( 0 )
+        return limits, counts
 
 
 class Compound_Report(Report):
@@ -130,6 +189,12 @@ class Compound_Report(Report):
         if name: r._name = name
         return r
     
+    def get_name_str(self) -> str:
+        out_str = ""
+        for title in self._name:
+            out_str += title + Report.separator
+        return out_str[:-len( Report.separator )]
+
     def _merge_str(self, other:Report, item):
         merge_names = self.at(item).copy()
         merge_names.append( other.at(item) )

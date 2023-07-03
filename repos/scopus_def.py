@@ -83,6 +83,7 @@ class scopus(abc_def.repo):
             # TODO: contemplar que pasa si la busqueda no produce resultados o si se alcanza el limite diario
             total_records_count = ans.json()['search-results']['opensearch:totalResults']
 
+        pub_year_array = []
         for art in range(int(total_records_count)):
             if art and art%records_per_page == 0:
                 self.add_query_param(str(art), 'first_index')
@@ -90,6 +91,8 @@ class scopus(abc_def.repo):
                 self.logger.debug(ans.url)
             # print("Debug:" + str(art) + " of " + str(ans.json()['total_records']))
             # print(' - ' + ans.json()['articles'][art%records_per_page]['title'])
-            self.add_to_dataframe(ans.json()['search-results']['entry'][art%records_per_page]['dc:title'],
-                                  ans.json()['search-results']['entry'][art%records_per_page]['prism:coverDate'])
+            pub_year = ans.json()['search-results']['entry'][art%records_per_page]['prism:coverDate']
+            self.add_to_dataframe(ans.json()['search-results']['entry'][art%records_per_page]['dc:title'], pub_year)
+            pub_year_array.append( pub_year )
         self.export_csv()
+        return self.build_report(pub_year_array)

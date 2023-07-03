@@ -5,6 +5,8 @@ import requests
 import logging
 import logging.config
 import pandas as pd
+from historic import *
+from datetime import datetime
 from abc import ABC, abstractmethod
 
 
@@ -110,3 +112,15 @@ class repo(ABC):
         repo.articles_df = repo.articles_df.append( self.articles_dataframe, ignore_index=True, verify_integrity=False)
         repo.articles_df.to_csv(repo.articles_fn, encoding='utf-8')
         # print("Soy " + type(self).__name__+ ", pero aun no se exportar a CSV! Toy chiquito :3")
+
+    def build_report(self, publication_dates_array):
+        time_span = None
+        from_year = self.query_params.get( self.dictionary['from_year'] )
+        if from_year is not None:
+            to_year = self.query_params.get( self.dictionary['to_year'] )
+            if to_year is None:
+                to_year = datetime.now().strftime('%Y')
+            time_span = ( int(from_year), int(to_year) )
+        r = report.Report(self.__class__.__name__)
+        r.process_dates( publication_dates_array, time_span)
+        return r
