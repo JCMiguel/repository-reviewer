@@ -106,7 +106,10 @@ class repo(ABC):
         self.logger.debug("Hola! Soy " + type(self).__name__)
 
     def export_csv(self):
-        self.logger.info("{} articles exported".format(len(self.articles_dataframe)))
-        repo.articles_df = repo.articles_df.append( self.articles_dataframe, ignore_index=True, verify_integrity=False)
+        # Era un repo mas viejecito (1.3.4) y me olvide como hacer appends...
+        # repo.articles_df = repo.articles_df.append( self.articles_dataframe, ignore_index=True, verify_integrity=False)
+        # Mejor recurrir a una version mas joven (2.0.0)
+        repo.articles_df = pd.concat( [repo.articles_df, self.articles_dataframe], ignore_index=True, verify_integrity=False )
         repo.articles_df.to_csv(repo.articles_fn, encoding='utf-8')
+        self.logger.info("{} articles exported".format(len(self.articles_dataframe)))
         # print("Soy " + type(self).__name__+ ", pero aun no se exportar a CSV! Toy chiquito :3")
