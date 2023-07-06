@@ -38,7 +38,6 @@ class Search:
             self._report_data = results
         else:
             self._report_data = self._report_data.merge_reports( results )
-        print(self._report_data)
 
 
     def report(self) -> Report:
@@ -55,11 +54,12 @@ class Search:
 
 
     def __str__(self) -> str:
-        return self._export_to_csv(with_header=True)
+        return self._print_with_csv_format(with_header=True)
 
 
-    def _export_to_csv(self, with_header:bool=False) -> str:
+    def _print_with_csv_format(self, with_header:bool=False) -> str:
         line = self._id + Report.separator
+        if self._report_data is None: return ''
         head_with_data = str(self._report_data).split(sep='\n')
         line += head_with_data[1] + Report.separator
         for tag in self._tags:

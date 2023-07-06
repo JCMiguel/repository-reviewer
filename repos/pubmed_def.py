@@ -50,13 +50,16 @@ class pubmed(abc_def.repo):
 
 
     def build_dictionary(self):
-        self.dictionary['default'] = 'term'
+        self.dictionary['content'] = 'term'
         self.dictionary['apikey'] = 'api_key'
         self.dictionary['title'] = 'title'
         self.dictionary['from_year'] = 'mindate'
-        self.dictionary['end_year'] = 'maxdate'
+        self.dictionary['to_year'] = 'maxdate'
         self.dictionary['max_records_per_page'] = 'retmax'
         self.dictionary['first_index'] = 'retstart'
+        self.dictionary['abstract'] = 'term'    # HACK
+        self.dictionary['keyword'] = 'term'     # HACK
+        self.dictionary['query'] = 'term'       # HACK
 
 
     def search(self):
@@ -85,7 +88,6 @@ class pubmed(abc_def.repo):
             pub_year = date_format(summ[art]['pubdate'])
             self.add_to_dataframe( summ[art]['title'], pub_year )
             pub_year_array.append( pub_year )
-        self.export_csv()
         return self.build_report(pub_year_array)
 
 
@@ -135,3 +137,7 @@ class pubmed(abc_def.repo):
             print( exc )
             return None
         return result
+
+
+    def parse_query(self, query: str) -> str:
+        self.logger.warning( "\n CUIDADO QUE pubmed.parse_query( ) NO ESTA IMPLEMENTADO pero si en [HACK] !\n")

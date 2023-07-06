@@ -60,6 +60,7 @@ if __name__ == "__main__" :
                         # TODO: Si me funciona con IEEE, tengo que ver cómo hacerlo para scopus.
                         id.load_query(args.query)
                     search_handler.append_partial_res( id.search() )
+                    id.export_csv()
                     del id
         except Exception:
             traceback.print_exc()

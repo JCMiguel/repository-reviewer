@@ -94,5 +94,4 @@ class scopus(abc_def.repo):
             pub_year = ans.json()['search-results']['entry'][art%records_per_page]['prism:coverDate']
             self.add_to_dataframe(ans.json()['search-results']['entry'][art%records_per_page]['dc:title'], pub_year)
             pub_year_array.append( pub_year )
-        self.export_csv()
         return self.build_report(pub_year_array)

@@ -4,6 +4,7 @@
 def get_min_and_max(array) -> tuple:
     min = max = array[0]
     for item in array:
+        if type(item) is not int: item = int(item[:4])
         if (min > item):
             min = item
         if (max < item):
@@ -50,7 +51,7 @@ class Report:
         occur = self._occurrences
         total = occur if type(occur) == int else occur[0]
         for cont in self._time_div_cont:
-            self._time_div_perc.append( 100*cont/total )
+            self._time_div_perc.append( 0 if (total == 0) else (100*cont/total) )
         return self
 
 
@@ -123,6 +124,8 @@ class Report:
         # Distribute all the items in each division by making a recount.
         for y in years:
             for i in range(TIME_DIVISIONS):
+                if type(y) is not int:
+                    y = int(y[:4])
                 if y <= div_limits[i]:
                     div_counts[i] += 1
                     break
@@ -161,6 +164,10 @@ class Report:
             elif item in ['_occurrences', '_time_div_perc']:
                 continue
             elif item == '_time_div_cont':
+                #out_str += "From" + Report.separator       ## TODO: cambiar a header generico
+                #for i in range(TIME_DIVISIONS):
+                #    out_str += "-"+str(i)+"-" + Report.separator
+                #out_str += "To" + Report.separator
                 out_str += str(Report.__time_period[0]) +"-"
                 for i,t in enumerate( self._get_periods_arrays(Report.__time_period)[0] ):
                     if i == 0: out_str += str(int(t))[-2:] + Report.separator

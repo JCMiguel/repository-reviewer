@@ -5,7 +5,7 @@ import requests
 import logging
 import logging.config
 import pandas as pd
-from historic import *
+from historic.report import Report
 from datetime import datetime
 from abc import ABC, abstractmethod
 
@@ -93,7 +93,7 @@ class repo(ABC):
     #     pass
 
     @abstractmethod
-    def search(self):
+    def search(self) -> Report:
         pass
 
     def debug_enabled(self):
@@ -108,12 +108,15 @@ class repo(ABC):
         self.logger.debug("Hola! Soy " + type(self).__name__)
 
     def export_csv(self):
-        self.logger.info("{} articles exported".format(len(self.articles_dataframe)))
-        repo.articles_df = repo.articles_df.append( self.articles_dataframe, ignore_index=True, verify_integrity=False)
+        # Era un repo mas viejecito (1.3.4) y me olvide como hacer appends...
+        # repo.articles_df = repo.articles_df.append( self.articles_dataframe, ignore_index=True, verify_integrity=False)
+        # Mejor recurrir a una version mas joven (2.0.0)
+        repo.articles_df = pd.concat( [repo.articles_df, self.articles_dataframe], ignore_index=True, verify_integrity=False )
         repo.articles_df.to_csv(repo.articles_fn, encoding='utf-8')
+        self.logger.info("{} articles exported".format(len(self.articles_dataframe)))
         # print("Soy " + type(self).__name__+ ", pero aun no se exportar a CSV! Toy chiquito :3")
 
-    def build_report(self, publication_dates_array):
+    def build_report(self, publication_dates_array) -> Report:
         time_span = None
         from_year = self.query_params.get( self.dictionary['from_year'] )
         if from_year is not None:
@@ -121,6 +124,6 @@ class repo(ABC):
             if to_year is None:
                 to_year = datetime.now().strftime('%Y')
             time_span = ( int(from_year), int(to_year) )
-        r = report.Report(self.__class__.__name__)
+        r = Report(self.__class__.__name__)
         r.process_dates( publication_dates_array, time_span)
         return r

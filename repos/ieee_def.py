@@ -82,5 +82,4 @@ class ieee(abc_def.repo):
             pub_year = ans.json()['articles'][art%records_per_page]['publication_year']
             self.add_to_dataframe(ans.json()['articles'][art%records_per_page]['title'], pub_year)
             pub_year_array.append( pub_year )
-        self.export_csv()
         return self.build_report(pub_year_array)
