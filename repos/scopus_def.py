@@ -49,17 +49,27 @@ class scopus(abc_def.repo):
         # query= '((TITLE(xai) OR TITLE(ai)) AND (TITLE-ABS-KEY(histopathology)))'
         return parsed_query
 
-    def build_scopus_query(self):
-        """
-            Esta función pretende mover los campos TITLE, TITLE-ABS-KEY y ABS adentro del parámetro query
-            Esto es porque la API de Scopus espera recibirlos en dicho parámetro.
-
-            Ejemplo:
-                'query=KEY(histology)%20and%20TITLE(xai)'
-        """
-        self.logger.debug("TODO: PENDIENTE HACER ESTA FUNCIÓN")
-        raise ValueError(f"Function build_scopus_query not implemented in {type(self).__name__}! Use --query")
-        pass
+    def add_query_param(self, value: str, value_type: str) -> None:
+        allowed_items = ["content", "title", "abstract", "keyword", "from_year"]
+        previous_content = ""
+        if value_type in allowed_items:
+            if self.dictionary['query'] in self.query_params:
+                previous_content = self.query_params[self.dictionary['query']]
+            if value is not None and value != "":
+                if value_type != "from_year":
+                    current_param = f'{self.dictionary[value_type]}({value})'
+                else:
+                    current_param = f'{self.dictionary[value_type]}={value}'
+                if previous_content != "":
+                    previous_content += f' {current_param}'
+                else:
+                    previous_content = current_param
+                print(current_param)
+            self.query_params[self.dictionary['query']] = previous_content
+            print(previous_content)
+            print(self.query_params)
+        else:
+            super().add_query_param(value, value_type)
 
     def search(self):
         """
@@ -67,10 +77,8 @@ class scopus(abc_def.repo):
         """
         self.logger.info("Do real searching in repo...")
         self.logger.debug(str(self.query_params))
-        if 'query' not in self.query_params:
-            self.logger.debug("Estoy buscando por parámetros y puedo reciclar el campo query")
-            self.build_scopus_query()
-        params = urllib.parse.urlencode(self.query_params, quote_via=urllib.parse.quote)
+
+        params = urllib.parse.urlencode(self.query_params, quote_via=urllib.parse.quote, safe='()')
         ans = requests.get(self.url, params=params, verify=self.get_config_param('validate-certificate'))
         # ans = requests.get(self.url,params=self.query_params, verify=self.get_config_param('validate-certificate'))
         self.logger.debug(ans.url)
