@@ -2,3 +2,4 @@ PyYAML==6.0
 requests==2.18.4
 numpy==1.24.2
 pandas==2.0.0
+customtkinter==5.2.0
