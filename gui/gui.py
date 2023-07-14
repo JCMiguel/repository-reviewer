@@ -12,6 +12,7 @@ class App(ctk.CTk):
         # configure window
         self.title("Repository Reviewer")
         self.geometry(f"{1100}x{580}")
+        self.status = False
 
         # configure grid layout (4x4)
         self.grid_columnconfigure(1, weight=1)
@@ -21,96 +22,74 @@ class App(ctk.CTk):
         # Sidebar
         # FIXME: Intente encapsularlo pero no me gusta como quedo. Hm....
         # El problema es que esto crea variables atributo que despues se usan en el propio init. No se como resolverlo
-        self.create_sidebar()
+        self.sidebar_frame = ctk.CTkFrame(self, width=140, corner_radius=0)
+        self.create_sidebar(self.sidebar_frame)
 
         # Tabs
-        self.create_tabs()
+        # self.create_tabs()
 
-        # set default values
-        self.sidebar_button_2.configure(state="disabled")
-        self.appearance_mode_optionemenu.set("Dark")
-        self.scaling_optionemenu.set("100%")
+        # TODO: ver https://stackoverflow.com/questions/7546050/switch-between-two-frames-in-tkinter
 
-    def create_sidebar(self):
+        container = ctk.CTkFrame(self)
+        # container.pack(expand=True)
+        container.grid(row=1, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        container.grid_columnconfigure(0, weight=1)
+        container.grid_rowconfigure(0, weight=1)
+
+        self.frames = {}
+        for F in (QuerierPage, IndexerPage, HistoryPage):
+            page_name = F.__name__
+            frame = F(parent=container, controller=self)
+            self.frames[page_name] = frame
+
+            # put all of the pages in the same location;
+            # the one on the top of the stacking order
+            # will be the one that is visible.
+            frame.grid(row=0, column=0, sticky="nsew")
+
+        self.show_frame("QuerierPage")
+
+    def show_frame(self, page_name):
+        '''Show a frame for the given page name'''
+        frame = self.frames[page_name]
+        frame.tkraise()
+
+    def create_sidebar(self, sidebar_frame: ctk.CTkFrame):
         # create sidebar frame with widgets
-        self.sidebar_frame = ctk.CTkFrame(self, width=140, corner_radius=0)
-        self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
-        self.sidebar_frame.grid_rowconfigure(5, weight=1)
-        self.logo_label = ctk.CTkLabel(self.sidebar_frame, text="Stages",
+        sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
+        sidebar_frame.grid_rowconfigure(5, weight=1)
+        logo_label = ctk.CTkLabel(sidebar_frame, text="Stages",
                                                  font=ctk.CTkFont(size=20, weight="bold"))
-        self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
-        self.sidebar_button_1 = ctk.CTkButton(self.sidebar_frame, text="Querier",
-                                                        command=self.sidebar_button_event)
-        self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
-        self.sidebar_button_2 = ctk.CTkButton(self.sidebar_frame, text="Quality check",
-                                                        command=self.sidebar_button_event)
-        self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
-        self.sidebar_button_3 = ctk.CTkButton(self.sidebar_frame, text="Indexer",
-                                                        command=self.sidebar_button_event)
-        self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
-        self.sidebar_button_4 = ctk.CTkButton(self.sidebar_frame, text="History",
-                                                        command=self.sidebar_button_event)
-        self.sidebar_button_4.grid(row=4, column=0, padx=20, pady=10)
-        self.appearance_mode_label = ctk.CTkLabel(self.sidebar_frame, text="Appearance Mode:", anchor="w")
-        self.appearance_mode_label.grid(row=6, column=0, padx=20, pady=(10, 0))
-        self.appearance_mode_optionemenu = ctk.CTkOptionMenu(self.sidebar_frame,
+        logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
+        sidebar_button_1 = ctk.CTkButton(sidebar_frame, text="Querier",
+                                                        command=self.sidebar_querier_button_event)
+        sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
+        sidebar_button_2 = ctk.CTkButton(sidebar_frame, text="Quality check",
+                                                        command=self.sidebar_dummy_button_event)
+        sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
+        sidebar_button_3 = ctk.CTkButton(sidebar_frame, text="Indexer",
+                                                        command=self.sidebar_indexer_button_event)
+        sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
+        sidebar_button_4 = ctk.CTkButton(sidebar_frame, text="History",
+                                                        command=self.sidebar_history_button_event)
+        sidebar_button_4.grid(row=4, column=0, padx=20, pady=10)
+        appearance_mode_label = ctk.CTkLabel(sidebar_frame, text="Appearance Mode:", anchor="w")
+        appearance_mode_label.grid(row=6, column=0, padx=20, pady=(10, 0))
+        appearance_mode_optionemenu = ctk.CTkOptionMenu(sidebar_frame,
                                                                        values=["Light", "Dark", "System"],
                                                                        command=self.change_appearance_mode_event)
-        self.appearance_mode_optionemenu.grid(row=7, column=0, padx=20, pady=(10, 10))
-        self.scaling_label = ctk.CTkLabel(self.sidebar_frame, text="UI Scaling:", anchor="w")
-        self.scaling_label.grid(row=8, column=0, padx=20, pady=(10, 0))
-        self.scaling_optionemenu = ctk.CTkOptionMenu(self.sidebar_frame,
+        appearance_mode_optionemenu.grid(row=7, column=0, padx=20, pady=(10, 10))
+        scaling_label = ctk.CTkLabel(sidebar_frame, text="UI Scaling:", anchor="w")
+        scaling_label.grid(row=8, column=0, padx=20, pady=(10, 0))
+        scaling_optionemenu = ctk.CTkOptionMenu(sidebar_frame,
                                                                values=["80%", "90%", "100%", "110%", "120%"],
                                                                command=self.change_scaling_event)
-        self.scaling_optionemenu.grid(row=9, column=0, padx=20, pady=(10, 20))
+        scaling_optionemenu.grid(row=9, column=0, padx=20, pady=(10, 20))
 
-    def create_tabs(self):
-        # create tabview
-        self.tabview = ctk.CTkTabview(self, width=250)
-        self.tabview.grid(row=0, column=1, padx=(20, 20), pady=(20, 0), sticky="nsew")
-        self.tabview.add("Querier")
-        self.tabview.add("Home")
-        self.tabview.add("Quality Check")
-        self.tabview.add("Indexer")
-        self.tabview.tab("Home").grid_columnconfigure(0, weight=1)  # configure grid of individual tabs
-        self.tabview.tab("Querier").grid_columnconfigure(0, weight=0)
-        self.tabview.tab("Querier").grid_columnconfigure(1, weight=1)
-
-        # Tab Home
-
-        # Tab Querier
-        # Labels
-        self.querier_tab_title_lbl = ctk.CTkLabel(self.tabview.tab("Querier"), text="Title", anchor="w",
-                                                  font=ctk.CTkFont(weight="bold"))
-        self.querier_tab_title_lbl.grid(row=0, column=0, padx=20, pady=10, sticky="nsew")
-        self.querier_tab_abs_lbl = ctk.CTkLabel(self.tabview.tab("Querier"), text="Abstract", anchor="w",
-                                                font=ctk.CTkFont(weight="bold"))
-        self.querier_tab_abs_lbl.grid(row=1, column=0, padx=20, pady=10, sticky="nsew")
-        self.querier_tab_key_lbl = ctk.CTkLabel(self.tabview.tab("Querier"), text="Keywords", anchor="w",
-                                                font=ctk.CTkFont(weight="bold"))
-        self.querier_tab_key_lbl.grid(row=2, column=0, padx=20, pady=10, sticky="nsew")
-        self.querier_tab_content_lbl = ctk.CTkLabel(self.tabview.tab("Querier"), text="Content", anchor="w",
-                                                    font=ctk.CTkFont(weight="bold"))
-        self.querier_tab_content_lbl.grid(row=3, column=0, padx=20, pady=10, sticky="nsew")
-        # Entry boxes
-        self.querier_tab_entry_title = ctk.CTkEntry(self.tabview.tab("Querier"), placeholder_text="Inserte texto aquí")
-        self.querier_tab_entry_title.grid(row=0, column=1, padx=20, columnspan=2, pady=10, sticky="nsew")
-        self.querier_tab_entry_abs = ctk.CTkEntry(self.tabview.tab("Querier"), placeholder_text="Inserte texto aquí")
-        self.querier_tab_entry_abs.grid(row=1, column=1, padx=20, columnspan=2, pady=10, sticky="nsew")
-        self.querier_tab_entry_key = ctk.CTkEntry(self.tabview.tab("Querier"), placeholder_text="Inserte texto aquí")
-        self.querier_tab_entry_key.grid(row=2, column=1, padx=20, columnspan=2, pady=10, sticky="nsew")
-        self.querier_tab_entry_content = ctk.CTkEntry(self.tabview.tab("Querier"), placeholder_text="Inserte texto aquí")
-        self.querier_tab_entry_content.grid(row=3, column=1, padx=20, columnspan=2, pady=10, sticky="nsew")
-        self.querier_tab_search_btn = ctk.CTkButton(self.tabview.tab("Querier"), text="Search!",
-                                                    command=self.querier_tab_search_btn_event)
-        self.querier_tab_search_btn.grid(row=4, column=1, padx=20, pady=10)
-        # Results and logs
-        self.querier_tab_logs_lbl = ctk.CTkLabel(self.tabview.tab("Querier"), text="Results and logs", anchor="center",
-                                                 font=ctk.CTkFont(weight="bold"))
-        self.querier_tab_logs_lbl.grid(row=6, column=0, padx=20, pady=10, sticky="nsew")
-        self.textbox = ctk.CTkTextbox(self.tabview.tab("Querier"), width=250)
-        self.textbox.grid(row=6, column=1, padx=20, pady=(20, 0), sticky="nsew")
-        self.textbox.configure(state="disabled")
+        # set default values
+        sidebar_button_2.configure(state="disabled")
+        appearance_mode_optionemenu.set("System")
+        scaling_optionemenu.set("100%")
 
     def open_input_dialog_event(self):
         dialog = ctk.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
@@ -123,9 +102,86 @@ class App(ctk.CTk):
         new_scaling_float = int(new_scaling.replace("%", "")) / 100
         ctk.set_widget_scaling(new_scaling_float)
 
-    def sidebar_button_event(self):
+    def sidebar_dummy_button_event(self):
+        print("dummy function wip")
+        pass
+
+    def sidebar_querier_button_event(self):
         # FIXME: Esto es solo un botón de juguete para probar funcionalidades
-        print("sidebar_button click")
+        print("QUERIER BUTOOTN click")
+        self.show_frame("QuerierPage")
+        #if self.status == False:
+        #    print(f'status is {self.status}')
+        #    self.checkbox_slider_frame.destroy()
+        #    self.slider_progressbar_frame._draw()
+        #    self.status = True
+        #else:
+        #    print(f'status is {self.status}')
+        #    self.slider_progressbar_frame.destroy()
+        #    self.status = False
+
+    def sidebar_indexer_button_event(self):
+        # FIXME: Esto es solo un botón de juguete para probar funcionalidades
+        print("INDEXER BUTOOTN click")
+        self.show_frame("IndexerPage")
+
+    def sidebar_history_button_event(self):
+        # FIXME: Esto es solo un botón de juguete para probar funcionalidades
+        print("HISTORY BUTOOTN click")
+        self.show_frame("HistoryPage")
+
+
+class QuerierPage(ctk.CTkFrame):
+    def __init__(self, parent, controller):
+        ctk.CTkFrame.__init__(self, parent)
+        self.controller = controller
+        # label = ctk.CTkLabel(self, text="This is the Querier Page")
+        # label.pack(side="top", fill="x", pady=10)
+
+        # button1 = ctk.CTkButton(self, text="Go to Page One",
+        #                     command=lambda: controller.show_frame("PageOne"))
+        # button2 = ctk.CTkButton(self, text="Go to Page Two",
+        #                     command=lambda: controller.show_frame("PageTwo"))
+        # button1.pack()
+        # button2.pack()
+
+        # Tab Querier
+        self.querier_tab_title_lbl = ctk.CTkLabel(self, text="Title", anchor="w",
+                                                  font=ctk.CTkFont(weight="bold"))
+        self.querier_tab_title_lbl.pack(side="top", anchor="w", padx=20, pady=0)
+        self.querier_tab_entry_title = ctk.CTkEntry(self, placeholder_text="Inserte texto aquí")
+        self.querier_tab_entry_title.pack(side="top", padx=20, pady=5, fill="x")
+
+        self.querier_tab_abs_lbl = ctk.CTkLabel(self, text="Abstract", anchor="w",
+                                                font=ctk.CTkFont(weight="bold"))
+        self.querier_tab_abs_lbl.pack(side="top", anchor="w", padx=20, pady=0)
+        self.querier_tab_entry_abs = ctk.CTkEntry(self, placeholder_text="Inserte texto aquí")
+        self.querier_tab_entry_abs.pack(side="top", padx=20, pady=5, fill="x")
+
+        self.querier_tab_key_lbl = ctk.CTkLabel(self, text="Keywords", anchor="w",
+                                                font=ctk.CTkFont(weight="bold"))
+        self.querier_tab_key_lbl.pack(side="top", anchor="w", padx=20, pady=0)
+        self.querier_tab_entry_key = ctk.CTkEntry(self, placeholder_text="Inserte texto aquí")
+        self.querier_tab_entry_key.pack(side="top", padx=20, pady=5, fill="x")
+
+        self.querier_tab_content_lbl = ctk.CTkLabel(self, text="Content", anchor="w",
+                                                    font=ctk.CTkFont(weight="bold"))
+        self.querier_tab_content_lbl.pack(side="top", anchor="w", padx=20, pady=0)
+        self.querier_tab_entry_content = ctk.CTkEntry(self,
+                                                      placeholder_text="Inserte texto aquí")
+        self.querier_tab_entry_content.pack(side="top", padx=20,  pady=5, fill="x")
+        # Entry boxes
+
+        self.querier_tab_search_btn = ctk.CTkButton(self, text="Search!",
+                                                    command=self.querier_tab_search_btn_event)
+        self.querier_tab_search_btn.pack(side="top", padx=20, pady=5)
+        # Results and logs
+        self.querier_tab_logs_lbl = ctk.CTkLabel(self, text="Results and logs", anchor="center",
+                                                 font=ctk.CTkFont(weight="bold"))
+        self.querier_tab_logs_lbl.pack(side="top", padx=20, pady=0)
+        self.textbox = ctk.CTkTextbox(self, width=2000, activate_scrollbars=True)
+        self.textbox.pack(side="top", padx=20, pady=(20, 20))
+        self.textbox.configure(state="disabled")
 
     def querier_tab_search_btn_event(self):
         # TODO: Work In Progress
@@ -138,6 +194,28 @@ class App(ctk.CTk):
         self.textbox.insert("end", f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")} - BUSCAAAARRR\n{texto}\n')
         self.textbox.configure(state="disabled")
         print("BUSCAARRR!!!!")
+
+
+class IndexerPage(ctk.CTkFrame):
+    def __init__(self, parent, controller):
+        ctk.CTkFrame.__init__(self, parent)
+        self.controller = controller
+        label = ctk.CTkLabel(self, text="This is Indexer Page")
+        label.pack(side="top", fill="x", pady=10)
+        button = ctk.CTkButton(self, text="Go to the start page",
+                           command=lambda: controller.show_frame("StartPage"))
+        button.pack()
+
+
+class HistoryPage(ctk.CTkFrame):
+    def __init__(self, parent, controller):
+        ctk.CTkFrame.__init__(self, parent)
+        self.controller = controller
+        label = ctk.CTkLabel(self, text="This is History Page")
+        label.pack(side="top", fill="x", pady=10)
+        button = ctk.CTkButton(self, text="Go to the start page",
+                           command=lambda: controller.show_frame("StartPage"))
+        button.pack()
 
 
 if __name__ == "__main__":
