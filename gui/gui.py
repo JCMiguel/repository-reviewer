@@ -1,3 +1,4 @@
+import subprocess
 import customtkinter as ctk
 from datetime import datetime
 
@@ -19,20 +20,11 @@ class App(ctk.CTk):
         self.grid_columnconfigure(2, weight=0)
         self.grid_rowconfigure((0, 1, 2), weight=1)
 
-        # Sidebar
-        # FIXME: Intente encapsularlo pero no me gusta como quedo. Hm....
-        # El problema es que esto crea variables atributo que despues se usan en el propio init. No se como resolverlo
-        self.sidebar_frame = ctk.CTkFrame(self, width=140, corner_radius=0)
-        self.create_sidebar(self.sidebar_frame)
-
-        # Tabs
-        # self.create_tabs()
-
-        # TODO: ver https://stackoverflow.com/questions/7546050/switch-between-two-frames-in-tkinter
-
+        # Pages
+        # NOTE: ver https://stackoverflow.com/questions/7546050/switch-between-two-frames-in-tkinter
         container = ctk.CTkFrame(self)
         # container.pack(expand=True)
-        container.grid(row=1, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        container.grid(row=0, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
         container.grid_columnconfigure(0, weight=1)
         container.grid_rowconfigure(0, weight=1)
 
@@ -41,13 +33,21 @@ class App(ctk.CTk):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
-
             # put all of the pages in the same location;
             # the one on the top of the stacking order
             # will be the one that is visible.
             frame.grid(row=0, column=0, sticky="nsew")
-
         self.show_frame("QuerierPage")
+
+        # Results and logs
+        self.log_frame = LogsFrame(parent=container, controller=self)
+        self.log_frame.grid(row=1, column=0, sticky="nsew", pady=(10,0))
+
+        # Sidebar
+        # FIXME: Intente encapsularlo pero no me gusta como quedo. Hm....
+        # El problema es que esto crea variables atributo que despues se usan en el propio init. No se como resolverlo
+        self.sidebar_frame = ctk.CTkFrame(self, width=140, corner_radius=0)
+        self.create_sidebar(self.sidebar_frame)
 
     def show_frame(self, page_name):
         '''Show a frame for the given page name'''
@@ -73,18 +73,22 @@ class App(ctk.CTk):
         sidebar_button_4 = ctk.CTkButton(sidebar_frame, text="History",
                                                         command=self.sidebar_history_button_event)
         sidebar_button_4.grid(row=4, column=0, padx=20, pady=10)
+
+        show_logs_checkbox = self.log_frame.Get_enabling_checkBox(sidebar_frame)
+        show_logs_checkbox.grid(row=5, column=0, padx=20, pady=(15, 0))
+
         appearance_mode_label = ctk.CTkLabel(sidebar_frame, text="Appearance Mode:", anchor="w")
-        appearance_mode_label.grid(row=6, column=0, padx=20, pady=(10, 0))
+        appearance_mode_label.grid(row=7, column=0, padx=20, pady=(10, 0))
         appearance_mode_optionemenu = ctk.CTkOptionMenu(sidebar_frame,
                                                                        values=["Light", "Dark", "System"],
                                                                        command=self.change_appearance_mode_event)
-        appearance_mode_optionemenu.grid(row=7, column=0, padx=20, pady=(10, 10))
+        appearance_mode_optionemenu.grid(row=8, column=0, padx=20, pady=(10, 10))
         scaling_label = ctk.CTkLabel(sidebar_frame, text="UI Scaling:", anchor="w")
-        scaling_label.grid(row=8, column=0, padx=20, pady=(10, 0))
+        scaling_label.grid(row=9, column=0, padx=20, pady=(10, 0))
         scaling_optionemenu = ctk.CTkOptionMenu(sidebar_frame,
                                                                values=["80%", "90%", "100%", "110%", "120%"],
                                                                command=self.change_scaling_event)
-        scaling_optionemenu.grid(row=9, column=0, padx=20, pady=(10, 20))
+        scaling_optionemenu.grid(row=10, column=0, padx=20, pady=(10, 20))
 
         # set default values
         sidebar_button_2.configure(state="disabled")
@@ -175,25 +179,21 @@ class QuerierPage(ctk.CTkFrame):
         self.querier_tab_search_btn = ctk.CTkButton(self, text="Search!",
                                                     command=self.querier_tab_search_btn_event)
         self.querier_tab_search_btn.pack(side="top", padx=20, pady=5)
-        # Results and logs
-        self.querier_tab_logs_lbl = ctk.CTkLabel(self, text="Results and logs", anchor="center",
-                                                 font=ctk.CTkFont(weight="bold"))
-        self.querier_tab_logs_lbl.pack(side="top", padx=20, pady=0)
-        self.textbox = ctk.CTkTextbox(self, width=2000, activate_scrollbars=True)
-        self.textbox.pack(side="top", padx=20, pady=(20, 20))
-        self.textbox.configure(state="disabled")
+
 
     def querier_tab_search_btn_event(self):
         # TODO: Work In Progress
-        self.textbox.configure(state="normal")
         texto = ""
         texto += f'Title({self.querier_tab_entry_title.get()}) - '
         texto += f'Abs({self.querier_tab_entry_abs.get()}) - '
         texto += f'Key({self.querier_tab_entry_key.get()}) - '
         texto += f'Content({self.querier_tab_entry_content.get()})'
-        self.textbox.insert("end", f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")} - BUSCAAAARRR\n{texto}\n')
-        self.textbox.configure(state="disabled")
-        print("BUSCAARRR!!!!")
+        # HACK: If search is empty then show help. Just a demo of subproces run
+        if texto == 'Title() - Abs() - Key() - Content()':
+            excecute("python querier.py -h")
+        else:
+            print(f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")} - BUSCAAAARRR\n{texto}\n')
+        #print("BUSCAARRR!!!!")
 
 
 class IndexerPage(ctk.CTkFrame):
@@ -216,6 +216,99 @@ class HistoryPage(ctk.CTkFrame):
         button = ctk.CTkButton(self, text="Go to the start page",
                            command=lambda: controller.show_frame("StartPage"))
         button.pack()
+
+
+class LogsFrame(ctk.CTkFrame):
+    PADX = 20
+    def __init__(self, parent, controller):
+        ctk.CTkFrame.__init__(self, parent)
+        self.controller = controller
+        self.logs_lbl = ctk.CTkLabel(self, text="Results and logs", anchor="w", font=ctk.CTkFont(weight="bold"))
+        self.logs_lbl.pack(side="top", padx=LogsFrame.PADX, pady=(10,0))
+        self.logs_box = ctk.CTkTextbox(self, width=2000, height=150, activate_scrollbars=True)
+        self.logs_box.pack(side="top", padx=LogsFrame.PADX, pady=(10, 20))
+        self.logs_box.configure(state="disabled")
+        self.show_logs_checkbox = None
+        self.stdout_redirector = StdoutRedirector(self.logs_box)
+
+    def Get_enabling_checkBox(self, parent) -> ctk.CTkCheckBox:
+        if (self.show_logs_checkbox is None):
+            self.show_logs_checkbox = ctk.CTkCheckBox(parent, text="Show results and logs", command=self._checkbox_event)
+        if bool(self.grid_info()): # This method led to know if the widget is visible now and so then syncronise the checkbox
+            self.show_logs_checkbox.select()
+        return self.show_logs_checkbox
+
+    def _checkbox_event(self):
+        value = self.show_logs_checkbox.get()
+        # Redirect the standar output between default stdout and self.logs_box
+        self.stdout_redirector.enable( value )
+        # Handle visibility on the front
+        self.grid() if value else self.grid_remove()
+        print("_checkbox_event( view_enabled={} )".format(value))
+
+
+import sys
+from typing import TextIO
+class StdoutRedirector(TextIO):
+    def __init__(self,text_widget:ctk.CTkTextbox):
+        self._text_space = text_widget
+        #self._text_space.tag_config(tagName='ERROR', background="black", foreground="red")
+        self._default_stdout = None
+        self.enable()
+
+    def write(self, string):
+            # FIXME: Next line would be preffered to keep config after writing but get next incoherent exception
+            #        ValueError: 'state' is not a supported argument. Look at the documentation for supported arguments.
+            # prev_state = self._text_space.cget("state")
+            self._text_space.configure(state="normal")
+            #try:
+            #    # FIXME: No aplica el tag. De todas formas este codigo no se lo deseo ni a mi peor enemigo, hay que mejorar esta abominacion
+            #    start_idx = string.index(bcolors.FAIL)
+            #    string = string.replace(bcolors.FAIL,"")
+            #    end_idx = string.index(bcolors.ENDC)
+            #    string = string.replace(bcolors.ENDC,"")
+            #    self._text_space.insert('end', string)
+            #    self._text_space.tag_add(tagName='ERROR', index1=int(start_idx), index2=int(end_idx))
+            #except:
+            #    pass
+            self._text_space.insert('end', string)
+            self._text_space.see('end')
+            #self._text_space.configure(prev_state)
+            self._text_space.configure(state="disabled")
+
+    def enable(self, on:bool=True):
+        if on:
+            self._default_stdout = sys.stdout
+            sys.stdout = self
+        else:
+            sys.stdout = self._default_stdout
+        self._enabled = on
+
+    def disable(self):
+        self.enable(False)
+
+
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+def excecute(cmd) -> int:
+    #proc = subprocess.Popen( "python querier.py -h".split(), text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    #print( proc.stdout.read() )
+    proc = subprocess.Popen( cmd.split(), text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
+    out, err = proc.communicate()
+    if len(out) > 0: print( out )
+    if len(err) > 0: print( bcolors.FAIL + err + bcolors.ENDC ) # print in red
+    return proc.returncode
+
 
 
 if __name__ == "__main__":
