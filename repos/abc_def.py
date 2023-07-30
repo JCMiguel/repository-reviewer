@@ -65,7 +65,7 @@ class repo(ABC):
         # TODO: Esto me quedo valido solo para IEEE, tengo que cambiarlo
 
         self.query_params[self.dictionary['query']] = self.parse_query(query)
-        pass
+
 
     def add_query_param(self, value: str, value_type: str) -> None:
         """
@@ -76,8 +76,9 @@ class repo(ABC):
                 - abstract
                 - title
         """
-        self.query_params[self.dictionary[value_type]] = value
-        pass
+        if value is not None:
+            self.query_params[self.dictionary[value_type]] = value
+
 
     def get_config_param(self, name: str):
         """
@@ -118,6 +119,9 @@ class repo(ABC):
 
     def build_report(self, publication_dates_array) -> Report:
         time_span = None
+        if (publication_dates_array is None):
+            method = self.__class__.__name__ +".build_report( )"
+            raise ValueError("On "+method+": publication_dates_array parameter must be a non-empty array")
         from_year = self.query_params.get( self.dictionary['from_year'] )
         if from_year is not None:
             to_year = self.query_params.get( self.dictionary['to_year'] )
