@@ -16,7 +16,7 @@ parser.add_argument('--abstract', dest='abstract', type=str, required=False)
 parser.add_argument('--from-year', dest='fromYear', type=str, required=False)
 parser.add_argument('--to-year', dest='toYear', type=str, required=False)
 parser.add_argument('--query', dest='query', type=str, required=False)
-parser.add_argument('--content', dest='content', type=str, required=False)
+parser.add_argument('--content', dest='content', type=str, required=False) # por qué no dejarlo por como input sin argumento?
 
 
 def read_yaml(file_path):
@@ -55,11 +55,13 @@ if __name__ == "__main__" :
             if cfg['repos'][repo]['enabled'] is True:
                 id = getattr(globals()[repo + '_def'], repo)(cfg['repos'][repo], cfg['params'], __debug_flag)
                 if id is not None:
-                    id.say_hello()
                     if args.query == "" or args.query is None:
                         id.add_query_param(args.content, 'content')
                         id.add_query_param(args.fromYear, 'from_year')
                         id.add_query_param(args.title, 'title')
+                        # porque no se agrega el resto de argumentos?
+                        id.add_query_param(args.toYear , 'to_year')
+                        id.add_query_param(args.abstract , 'abstract')
                     else:
                         # TODO: Si me funciona con IEEE, tengo que ver cómo hacerlo para scopus.
                         id.load_query(args.query)
@@ -69,4 +71,6 @@ if __name__ == "__main__" :
             traceback.print_exc()
     #del repos
 
+    print("\n\nHistory Report:")
+    print( str(search_handler) )
     print("Fin de ejecución")
