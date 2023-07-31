@@ -20,8 +20,6 @@ class App(ctk.CTk):
         self.grid_rowconfigure((0, 1, 2), weight=1)
 
         # Sidebar
-        # FIXME: Intente encapsularlo pero no me gusta como quedo. Hm....
-        # El problema es que esto crea variables atributo que despues se usan en el propio init. No se como resolverlo
         self.sidebar_frame = ctk.CTkFrame(self, width=140, corner_radius=0)
         self.create_sidebar(self.sidebar_frame)
 
@@ -203,8 +201,12 @@ class IndexerPage(ctk.CTkFrame):
         label = ctk.CTkLabel(self, text="This is Indexer Page")
         label.pack(side="top", fill="x", pady=10)
         button = ctk.CTkButton(self, text="Go to the start page",
-                           command=lambda: controller.show_frame("StartPage"))
+                           command=self.dummy_action)
         button.pack()
+
+    def dummy_action(self):
+        print("dummy function wip")
+        pass
 
 
 class HistoryPage(ctk.CTkFrame):
@@ -214,8 +216,12 @@ class HistoryPage(ctk.CTkFrame):
         label = ctk.CTkLabel(self, text="This is History Page")
         label.pack(side="top", fill="x", pady=10)
         button = ctk.CTkButton(self, text="Go to the start page",
-                           command=lambda: controller.show_frame("StartPage"))
+                           command=self.dummy_action)
         button.pack()
+
+    def dummy_action(self):
+        print("dummy function wip")
+        pass
 
 
 if __name__ == "__main__":
