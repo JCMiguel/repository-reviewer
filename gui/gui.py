@@ -22,6 +22,7 @@ class App(ctk.CTk):
 
         # Pages
         # NOTE: ver https://stackoverflow.com/questions/7546050/switch-between-two-frames-in-tkinter
+
         container = ctk.CTkFrame(self)
         # container.pack(expand=True)
         container.grid(row=0, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
@@ -203,8 +204,12 @@ class IndexerPage(ctk.CTkFrame):
         label = ctk.CTkLabel(self, text="This is Indexer Page")
         label.pack(side="top", fill="x", pady=10)
         button = ctk.CTkButton(self, text="Go to the start page",
-                           command=lambda: controller.show_frame("StartPage"))
+                           command=self.dummy_action)
         button.pack()
+
+    def dummy_action(self):
+        print("dummy function wip")
+        pass
 
 
 class HistoryPage(ctk.CTkFrame):
@@ -214,8 +219,12 @@ class HistoryPage(ctk.CTkFrame):
         label = ctk.CTkLabel(self, text="This is History Page")
         label.pack(side="top", fill="x", pady=10)
         button = ctk.CTkButton(self, text="Go to the start page",
-                           command=lambda: controller.show_frame("StartPage"))
+                           command=self.dummy_action)
         button.pack()
+
+    def dummy_action(self):
+        print("dummy function wip")
+        pass
 
 
 class LogsFrame(ctk.CTkFrame):
