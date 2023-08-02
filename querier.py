@@ -60,6 +60,8 @@ if __name__ == "__main__" :
                         id.add_query_param(args.content, 'content')
                         id.add_query_param(args.fromYear, 'from_year')
                         id.add_query_param(args.title, 'title')
+                        id.add_query_param(args.toYear, 'to_year')
+                        id.add_query_param(args.abstract, 'abstract')
                     else:
                         # TODO: Si me funciona con IEEE, tengo que ver cómo hacerlo para scopus.
                         id.load_query(args.query)

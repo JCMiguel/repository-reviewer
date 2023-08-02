@@ -83,13 +83,16 @@ class scopus(abc_def.repo):
         # ans = requests.get(self.url,params=self.query_params, verify=self.get_config_param('validate-certificate'))
         self.logger.debug(ans.url)
         records_per_page = int(self.query_params[self.dictionary['max_records_per_page']])
+        total_records_count = ans.json()['search-results']['opensearch:totalResults']
 
         if self.debug_enabled():
             self.logger.warning("Debug activado: Limitando cantidad de registros")
-            total_records_count = records_per_page*3
-        else:
-            # TODO: contemplar que pasa si la busqueda no produce resultados o si se alcanza el limite diario
-            total_records_count = ans.json()['search-results']['opensearch:totalResults']
+            # total_records_count = records_per_page*3
+            total_records_count = min(records_per_page * 3,
+                                      int(ans.json()['search-results']['opensearch:totalResults']))
+        # else:
+        #     # TODO: contemplar que pasa si la busqueda no produce resultados o si se alcanza el limite diario
+        #     total_records_count = ans.json()['search-results']['opensearch:totalResults']
 
         for art in range(int(total_records_count)):
             if art and art%records_per_page == 0:
