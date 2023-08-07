@@ -23,31 +23,13 @@ def read_yaml(file_path):
     with open(file_path, "r") as f:
         return yaml.safe_load(f)
 
-if __name__ == "__main__" :
-    args = parser.parse_args()
 
-    if args.debug:
-        print("El debug esta habilitado")
-        __debug_flag = True
-    else:
-        __debug_flag = False
-
-
+def querier(debug: bool, query: str = "", content: str = "", from_year: str = "", title: str = "", arguments = None):
     print("Cargando archivo de configuración")
     cfg = read_yaml("config/querier_config.yml") # TODO: Pendiente hacer chequeo de errores
-    #TODO: validar errores en el config.yml. hay que asegurar que exista todo lo necesario.
-    # Ejemplo: url, params, apikey, etc.
-    # Y que exista una clase llamada como en el config.yml
 
-    # FIXME: Deberia borrar esto porque fue una prueba
-    # # Cargamos el diccionario
-    #logging.config.dictConfig((cfg['params'])['logs'])
-    # # Creamos el logger definido en el archivo de configuración
-    #logger = logging.getLogger('Logger_Example')
-
+    print(debug)
     print("Cargando clases de repositorios")
-    #repos = [ 'ieee', 'scopus' ]
-    #print(globals())
     for repo in cfg['repos'].keys():
         try:
             # La línea siguiente invoca a la clase dentro del package.
@@ -69,6 +51,15 @@ if __name__ == "__main__" :
                     del id
         except Exception:
             traceback.print_exc()
-    #del repos
-
     print("Fin de ejecución")
+
+
+if __name__ == "__main__" :
+    args = parser.parse_args()
+
+    if args.debug:
+        __debug_flag = True
+    else:
+        __debug_flag = False
+
+    querier(__debug_flag, args.query, args.content, args.fromYear, args.title)

@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from misc import StdoutRedirector
+from .misc import StdoutRedirector
 
 
 class LogsFrame(ctk.CTkFrame):

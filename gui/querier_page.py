@@ -1,6 +1,7 @@
 import customtkinter as ctk
-from misc import execute
+from .misc import execute
 from datetime import datetime
+from engine.querier import querier
 
 
 class QuerierPage(ctk.CTkFrame):
@@ -58,7 +59,13 @@ class QuerierPage(ctk.CTkFrame):
         texto += f'Content({self.querier_tab_entry_content.get()})'
         # HACK: If search is empty then show help. Just a demo of subproces run
         if texto == 'Title() - Abs() - Key() - Content()':
-            execute("python querier.py -h")
+            # execute("python querier.py -h")
+            querier(True, title="xai", content="xai")
+            # querier(debug = false, "",
+            #         self.querier_tab_entry_content.get(),
+            #         self.querier_tab_entry_title.get(),
+            #         self.querier_tab_entry_abs.get())
+            # querier(debug: bool, query: str, content: str, from_year: str, title: str, arguments = None)
         else:
             print(f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")} - BUSCAAAARRR\n{texto}\n')
         #print("BUSCAARRR!!!!")

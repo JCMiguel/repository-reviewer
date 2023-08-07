@@ -1,8 +1,9 @@
 import customtkinter as ctk
-from querier_page import QuerierPage
-from history_page import HistoryPage
-from log_frame import LogsFrame
-from indexer_page import IndexerPage
+
+from .history_page import HistoryPage
+from .indexer_page import IndexerPage
+from .log_frame import LogsFrame
+from .querier_page import QuerierPage
 
 ctk.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 ctk.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
@@ -44,7 +45,7 @@ class App(ctk.CTk):
 
         # Results and logs
         self.log_frame = LogsFrame(parent=container, controller=self)
-        self.log_frame.grid(row=1, column=0, sticky="nsew", pady=(10,0))
+        self.log_frame.grid(row=1, column=0, sticky="nsew", pady=(10, 0))
 
         # Sidebar
         # FIXME: Intente encapsularlo pero no me gusta como quedo. Hm....
@@ -62,19 +63,19 @@ class App(ctk.CTk):
         sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
         sidebar_frame.grid_rowconfigure(5, weight=1)
         logo_label = ctk.CTkLabel(sidebar_frame, text="Stages",
-                                                 font=ctk.CTkFont(size=20, weight="bold"))
+                                  font=ctk.CTkFont(size=20, weight="bold"))
         logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
         sidebar_button_1 = ctk.CTkButton(sidebar_frame, text="Querier",
-                                                        command=self.sidebar_querier_button_event)
+                                         command=self.sidebar_querier_button_event)
         sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
         sidebar_button_2 = ctk.CTkButton(sidebar_frame, text="Quality check",
-                                                        command=self.sidebar_dummy_button_event)
+                                         command=self.sidebar_dummy_button_event)
         sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
         sidebar_button_3 = ctk.CTkButton(sidebar_frame, text="Indexer",
-                                                        command=self.sidebar_indexer_button_event)
+                                         command=self.sidebar_indexer_button_event)
         sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
         sidebar_button_4 = ctk.CTkButton(sidebar_frame, text="History",
-                                                        command=self.sidebar_history_button_event)
+                                         command=self.sidebar_history_button_event)
         sidebar_button_4.grid(row=4, column=0, padx=20, pady=10)
 
         show_logs_checkbox = self.log_frame.Get_enabling_checkBox(sidebar_frame)
@@ -83,14 +84,14 @@ class App(ctk.CTk):
         appearance_mode_label = ctk.CTkLabel(sidebar_frame, text="Appearance Mode:", anchor="w")
         appearance_mode_label.grid(row=7, column=0, padx=20, pady=(10, 0))
         appearance_mode_optionemenu = ctk.CTkOptionMenu(sidebar_frame,
-                                                                       values=["Light", "Dark", "System"],
-                                                                       command=self.change_appearance_mode_event)
+                                                        values=["Light", "Dark", "System"],
+                                                        command=self.change_appearance_mode_event)
         appearance_mode_optionemenu.grid(row=8, column=0, padx=20, pady=(10, 10))
         scaling_label = ctk.CTkLabel(sidebar_frame, text="UI Scaling:", anchor="w")
         scaling_label.grid(row=9, column=0, padx=20, pady=(10, 0))
         scaling_optionemenu = ctk.CTkOptionMenu(sidebar_frame,
-                                                               values=["80%", "90%", "100%", "110%", "120%"],
-                                                               command=self.change_scaling_event)
+                                                values=["80%", "90%", "100%", "110%", "120%"],
+                                                command=self.change_scaling_event)
         scaling_optionemenu.grid(row=10, column=0, padx=20, pady=(10, 20))
 
         # set default values
@@ -117,12 +118,12 @@ class App(ctk.CTk):
         # FIXME: Esto es solo un botón de juguete para probar funcionalidades
         print("QUERIER BUTOOTN click")
         self.show_frame("QuerierPage")
-        #if self.status == False:
+        # if self.status == False:
         #    print(f'status is {self.status}')
         #    self.checkbox_slider_frame.destroy()
         #    self.slider_progressbar_frame._draw()
         #    self.status = True
-        #else:
+        # else:
         #    print(f'status is {self.status}')
         #    self.slider_progressbar_frame.destroy()
         #    self.status = False
@@ -136,8 +137,3 @@ class App(ctk.CTk):
         # FIXME: Esto es solo un botón de juguete para probar funcionalidades
         print("HISTORY BUTOOTN click")
         self.show_frame("HistoryPage")
-
-
-if __name__ == "__main__":
-    app = App()
-    app.mainloop()
