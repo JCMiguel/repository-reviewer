@@ -14,7 +14,7 @@ def read_yaml(file_path):
 
 
 def querier(debug: bool, query: str = "", content: str = "", from_year: str = "",
-            to_year: str = "", title: str = "", abstract: str = "", redirect_logs = False):
+            to_year: str = "", title: str = "", abstract: str = "", keywords: str = "", redirect_logs = False):
     print("Cargando archivo de configuración")
     cfg = read_yaml("config/querier_config.yml")  # TODO: Pendiente hacer chequeo de errores
 
