@@ -2,6 +2,7 @@
 # -*- coding: utf8
 
 import argparse
+from engine.querier import querier
 import yaml
 import logging
 import logging.config
@@ -19,54 +20,12 @@ parser.add_argument('--query', dest='query', type=str, required=False)
 parser.add_argument('--content', dest='content', type=str, required=False)
 
 
-def read_yaml(file_path):
-    with open(file_path, "r") as f:
-        return yaml.safe_load(f)
-
-if __name__ == "__main__" :
+if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.debug:
-        print("El debug esta habilitado")
         __debug_flag = True
     else:
         __debug_flag = False
 
-
-    print("Cargando archivo de configuración")
-    cfg = read_yaml("config/querier_config.yml") # TODO: Pendiente hacer chequeo de errores
-    #TODO: validar errores en el config.yml. hay que asegurar que exista todo lo necesario.
-    # Ejemplo: url, params, apikey, etc.
-    # Y que exista una clase llamada como en el config.yml
-
-    # FIXME: Deberia borrar esto porque fue una prueba
-    # # Cargamos el diccionario
-    #logging.config.dictConfig((cfg['params'])['logs'])
-    # # Creamos el logger definido en el archivo de configuración
-    #logger = logging.getLogger('Logger_Example')
-
-    print("Cargando clases de repositorios")
-    #repos = [ 'ieee', 'scopus' ]
-    #print(globals())
-    for repo in cfg['repos'].keys():
-        try:
-            # La línea siguiente invoca a la clase dentro del package.
-            # Ejemplo: invoca al constructor ieee() de repos.ieee_def
-            if cfg['repos'][repo]['enabled'] is True:
-                id = getattr(globals()[repo + '_def'], repo)(cfg['repos'][repo], cfg['params'], __debug_flag)
-                if id is not None:
-                    id.say_hello()
-                    if args.query == "" or args.query is None:
-                        id.add_query_param(args.content, 'content')
-                        id.add_query_param(args.fromYear, 'from_year')
-                        id.add_query_param(args.title, 'title')
-                    else:
-                        # TODO: Si me funciona con IEEE, tengo que ver cómo hacerlo para scopus.
-                        id.load_query(args.query)
-                    id.search()
-                    del id
-        except Exception:
-            traceback.print_exc()
-    #del repos
-
-    print("Fin de ejecución")
+    querier(__debug_flag, args.query, args.content, args.fromYear, args.title)

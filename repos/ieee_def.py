@@ -83,5 +83,6 @@ class ieee(abc_def.repo):
                 self.logger.debug(ans.url)
             #print("Debug:" + str(art) + " of " + str(total_records_count) + "/" + str(ans.json()['total_records']) + " -- index: " + str(art%records_per_page) )
             #print(' - ' + ans.json()['articles'][art%records_per_page]['title'])
-            self.add_to_dataframe(ans.json()['articles'][art%records_per_page]['title'], ans.json()['articles'][art%records_per_page]['publication_year'])
+            self.add_to_dataframe(ans.json()['articles'][art%records_per_page]['title'],
+                                  ans.json()['articles'][art%records_per_page]['publication_year'])
         self.export_csv()

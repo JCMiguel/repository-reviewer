@@ -11,6 +11,18 @@ repos:
     enabled: true
     logger: 'default'
 
+  pubmed:
+    url: ''
+    apikey: WRITE YOUR API KEY HERE!
+    enabled: true
+    logger: 'default'
+
+  springer:
+    url: ''
+    apikey: WRITE YOUR API KEY HERE!
+    enabled: true
+    logger: 'default'
+
 params:
   tool-name: repository-reviewer
   version: 0.1.2
