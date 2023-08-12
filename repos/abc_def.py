@@ -126,8 +126,8 @@ class repo(ABC):
         if from_year is not None:
             to_year = self.query_params.get( self.dictionary['to_year'] )
             if to_year is None:
-                to_year = datetime.now().strftime('%Y')
-            time_span = ( int(from_year), int(to_year) )
-        r = Report(self.__class__.__name__)
+                to_year = datetime.now().strftime('%Y-%m-%d')
+            time_span = ( from_year, to_year )
+        r = Report(self.__class__.__name__, self.logger)
         r.process_dates( publication_dates_array, time_span)
         return r

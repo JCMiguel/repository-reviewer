@@ -17,7 +17,7 @@ parser.add_argument('--abstract', dest='abstract', type=str, required=False)
 parser.add_argument('--from-year', dest='fromYear', type=str, required=False)
 parser.add_argument('--to-year', dest='toYear', type=str, required=False)
 parser.add_argument('--query', dest='query', type=str, required=False)
-parser.add_argument('--content', dest='content', type=str, required=False) # por qué no dejarlo por como input sin argumento?
+parser.add_argument('--content', dest='content', type=str, required=False)
 
 
 def read_yaml(file_path):
@@ -30,7 +30,6 @@ if __name__ == "__main__" :
     if args.debug:
         print("El debug esta habilitado")
         __debug_flag = True
-        print("ARGUMENTS:\n", args.__dict__)
     else:
         __debug_flag = False
 
@@ -43,7 +42,6 @@ if __name__ == "__main__" :
 
     search_handler = search.Search( args.__dict__ )
 
-    print("Cargando clases de repositorios")
     for repo in cfg['repos'].keys():
         try:
             # La línea siguiente invoca a la clase dentro del package.
@@ -55,7 +53,6 @@ if __name__ == "__main__" :
                         id.add_query_param(args.content, 'content')
                         id.add_query_param(args.fromYear, 'from_year')
                         id.add_query_param(args.title, 'title')
-                        # porque no se agrega el resto de argumentos?
                         id.add_query_param(args.toYear , 'to_year')
                         id.add_query_param(args.abstract , 'abstract')
                     else:
@@ -67,7 +64,4 @@ if __name__ == "__main__" :
         except Exception:
             traceback.print_exc()
     #del repos
-
-    print("\n\nHistory Report:")
-    print( str(search_handler) )
-    print("Fin de ejecución")
+    history.History.Add( search_handler )

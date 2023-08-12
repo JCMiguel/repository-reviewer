@@ -9,10 +9,10 @@ from datetime import datetime
 class Search:
 
     RESULTS_BASE_FILENAME = 'results\\articles_table.csv'
+    ID_Format = "%y%m%d%H%M%S"
 
     def __init__(self, search_params:dict):
-        frmat_id = "%y%m%d%H%M%S"
-        self._id = datetime.now().strftime(frmat_id)
+        self._id = datetime.now().strftime( Search.ID_Format )
         self._report_data = None
         self._tags = []
         self._search_params = search_params
@@ -54,22 +54,39 @@ class Search:
 
 
     def __str__(self) -> str:
-        return self._print_with_csv_format(with_header=True)
+        return '\n'.join( self.to_csv_lines(with_header=True) )
 
 
-    def _print_with_csv_format(self, with_header:bool=False) -> str:
+    def to_csv_lines(self, with_header:bool=False) -> list:
         line = self._id + Report.separator
-        if self._report_data is None: return ''
-        head_with_data = str(self._report_data).split(sep='\n')
+        if self.report() is None: return ''
+        head_with_data = str(self.report()).split(sep='\n')
         line += head_with_data[1] + Report.separator
         for tag in self._tags:
             line += " #"+ tag
         else: line += Report.separator
         line += str(self._search_params) + Report.separator
 
+        result = []
         if with_header:
             header = 'ID' + Report.separator + head_with_data[0] + Report.separator
             header+= 'Tags' + Report.separator
             header+= 'Search Params' + Report.separator
-            line = header[:-len(Report.separator)] + '\n' + line
-        return line[:-len(Report.separator)] + '\n'
+            result.append( header[:-len(Report.separator)] )
+        result.append( line[:-len(Report.separator)] )
+        return result
+
+    def to_dict_format(self, for_dataFrame:bool=False) -> dict:
+        if self.report() is None:
+            return ''
+        di = dict()
+        h_and_d = self.to_csv_lines(with_header=True)
+        header_l = h_and_d[0].split(';')
+        data_list = h_and_d[1].split(';')
+        if for_dataFrame:
+            for (title, value) in zip( header_l, data_list ):
+                di[title] = [value]
+        else:
+            for (title, value) in zip( header_l, data_list ):
+                di[title] = value
+        return di

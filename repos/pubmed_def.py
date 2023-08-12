@@ -81,13 +81,12 @@ class pubmed(abc_def.repo):
         pub_years_array = []
         self._map_params_into_terms()
         results = self.__exec_eSearch( idxs_dict, use_history=True )
-        self.logger.debug("Search results: "+ str(results))
+        self.logger.info("Number of articles found: "+ results['count'] )
+        # self.logger.debug("Search results: "+ str(results))
 
-        if results:
-            self.logger.info("Number of articles found: "+ results['count'] )
-
+        if int(results['count']) > 0:
             summ = self.__exec_Summary( results, idxs_dict, use_history=True )
-            self.logger.debug("Summary results: "+ str(summ))
+            # self.logger.debug("Summary results: "+ str(summ))
 
             articles = summ[pubmed._p_ids_summary]
             for art in articles:
@@ -135,10 +134,14 @@ class pubmed(abc_def.repo):
 
     def __validate_pubmed_answer(self, ans, method_result_field:str) -> dict:
         error = res = None
-        if not ans.ok: # Request level error ?
-            error = ans.reason
-        else:          # Search engine level error ?
-            error = ans.json().get( method_result_field ).get('ERROR', False)
+        try:
+            if not ans.ok: # Request level error ?
+                error = ans.reason
+            else:          # Search engine level error ?
+                error = ans.json().get( method_result_field ).get('ERROR', False)
+        except Exception as exc:
+            self.logger.error("On exception, ans: "+ str(ans.__dict__) )
+            error = str( exc )
         if error:
             self.logger.error('on {}: REASON {{{}}}'.format(method_result_field, error) )
         else:
