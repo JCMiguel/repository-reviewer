@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf8
 
+from engine.base import BasicEngine
 import yaml
 import logging
 import logging.config
@@ -13,6 +14,7 @@ def read_yaml(file_path):
         return yaml.safe_load(f)
 
 
+# TODO: Migrar a clase Querier
 def querier(debug: bool, query: str = "", content: str = "", from_year: str = "",
             to_year: str = "", title: str = "", abstract: str = "", keywords: str = "", redirect_logs = False):
     print("Cargando archivo de configuración")
