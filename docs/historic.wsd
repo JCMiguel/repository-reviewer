@@ -1,0 +1,42 @@
+@startuml
+
+package historic{
+  Report --o Search
+  History "1  " o-- "0.." Search
+}
+
+Querier o-- Repo
+Querier o-- History
+Repo --> Report
+
+
+class Repo {
+ ~search(): Report
+}
+
+class Querier
+
+class historic.History {
+ -
+ +Add( Search )
+ +Get( id )
+ +Get( index )
+ +Get( strMatch )
+}
+
+class historic.Report{
+ -counter
+ -timeStats
+ #print()
+}
+
+class historic.Search {
+ - id
+ - results
+ - stringParams
+ - reportData
+ +readResults()
+ +report()
+ +tag()
+}
+@enduml
