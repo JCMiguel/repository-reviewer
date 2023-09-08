@@ -18,37 +18,6 @@ class Indexer(BasicEngine):
     """
         Métodos privados de la clase Indexer
     """
-    __base_dict_df = {  # Nombre del archivo - artículo descargado
-        'Nombre de archivo': 'string',
-        # Título del artículo
-        'Título': 'string',
-        # Autor(es) del artículo
-        'Autor(es)': 'string',
-        # Indica si es un estudio primario
-        'Estudio primario': 'boolean',
-        # Indica si su análisis está pendiente
-        'Pendiente analizar': 'boolean',
-        # Repositorio donde fue hallado el artículo
-        'Medio de publicación': 'string',
-        # Año de publicación
-        'Año de publicación': 'int32',
-        # Fecha de fichaje
-        'Fecha de fichaje': 'datetime64[ns]',
-        # Abstract
-        'Abstract': 'string',
-        # Palabras clave del artículo
-        'Palabras clave': 'string',
-        # Trabajos de otros autores mencionados en la publicación que podrían
-        #    ser útiles para ampliar el tema
-        'Referencias a otros artículos': 'string',
-        # Aspectos metodológicos o conceptuales angulares para la investigación
-        'Fortalezas': 'string',
-        # Aspectos que no están bien desarrollados o no resultan claros
-        'Debilidades': 'string',
-        # Posibles líneas de trabajo para la tesis
-        'Oportunidades': 'string'
-    }
-
     def __input_a_date(self, message: str) -> str:
         message = ' > ' + message + ':\n    '
         bad_input_msg = "Se aceptan solo caracteres imprimibles!\n"
@@ -85,8 +54,8 @@ class Indexer(BasicEngine):
         return next(filter(str.isdigit, replies))  # valid_response
 
     def __index_an_article(self) -> dict:
-        new_dict = dict.fromkeys(self.__base_dict_df.keys())
-        for item in self.__base_dict_df.items():
+        new_dict = dict.fromkeys(self._base_dict_df.keys())
+        for item in self._base_dict_df.items():
             item_type = item[1]
             item_name = item[0]
             if item_type == 'string':
@@ -106,7 +75,7 @@ class Indexer(BasicEngine):
     def __load_dataframe(self, filename: str) -> pd.DataFrame:
         fichas = pd.read_csv(filename, index_col=False)
         fichas = fichas.fillna('')
-        return fichas.astype(self.__base_dict_df)
+        return fichas.astype(self._base_dict_df)
 
     def __match_with_filter(self, args: dict, ficha: pd.DataFrame, index: int) -> bool:
         match_flag = False
@@ -116,7 +85,7 @@ class Indexer(BasicEngine):
             if args['index'] == str(ficha.index.values[0]):
                 match_flag = True
         elif 'filename' in args.keys() and args['filename'] is not None:
-            # FIXME: Esta línea rompe el encapsulamiento de __base_dict_df
+            # FIXME: Esta línea rompe el encapsulamiento de _base_dict_df
             # FIXME: 'Nombre de archivo' debería ser dinámico.
             if args['filename'] in str(ficha['Nombre de archivo'].values):
                 match_flag = True
@@ -127,7 +96,6 @@ class Indexer(BasicEngine):
     """
         Métodos públicos de la clase Indexer
     """
-
     def get_index_card(self, args) -> int:
         """
             get_index_card
@@ -142,9 +110,11 @@ class Indexer(BasicEngine):
                     print('----------------------------------------------------')
                     print(f'              FICHA SELECCIONADA - INDEX {i}')
                     print('----------------------------------------------------')
-                    for item in self.__base_dict_df.items():
+                    for item in self._base_dict_df.items():
                         item_name = item[0]
-                        print(f' > {item_name}:\n    {fichas[item_name].values[i]}')
+                        value = fichas[item_name].values[i]
+                        if len(str(value)) > 0:
+                            print(f' > {item_name}:\n    {value}')
         else:
             print("No hay ninguna ficha cargada")
         return 0
@@ -160,13 +130,13 @@ class Indexer(BasicEngine):
             print('              FICHA A EDITAR')
             print('----------------------------------------------------')
             # TODO: Pendiente agregar un filtro acá en función de algún argumento de ejecución
-            for item in self.__base_dict_df.items():
+            for item in self._base_dict_df.items():
                 item_name = item[0]
                 print(f' > {item_name}:\n    {fichas[item_name].values[args.index]}')
             if self.__input_a_boolean("¿Está seguro que desea editar esta ficha?"):
                 new_dict = self.__index_an_article()
                 edited_ficha = pd.DataFrame(new_dict, index=[args.index])
-                edited_ficha.astype(self.__base_dict_df)
+                edited_ficha.astype(self._base_dict_df)
                 print(fichas)
                 print(edited_ficha)
                 fichas.loc[edited_ficha.index, :] = edited_ficha[:]
@@ -189,7 +159,7 @@ class Indexer(BasicEngine):
             print('              FICHA A EDITAR')
             print('----------------------------------------------------')
             # TODO: Pendiente agregar un filtro acá en función de algún argumento de ejecución
-            for item in self.__base_dict_df.items():
+            for item in self._base_dict_df.items():
                 item_name = item[0]
                 print(f' > {item_name}:\n    {fichas[item_name].values[args.index]}')
             if self.__input_a_boolean("¿Está seguro que desea eliminar esta ficha?"):
@@ -218,7 +188,7 @@ class Indexer(BasicEngine):
             fichas = pd.concat(frames)
         else:
             fichas = pd.DataFrame(new_dict, index=[0])
-            fichas.astype(self.__base_dict_df)
+            fichas.astype(self._base_dict_df)
 
         fichas.to_csv('fichas.csv', encoding='utf-8', index=False)
         return 0

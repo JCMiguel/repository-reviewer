@@ -2,13 +2,8 @@
 # -*- coding: utf8
 
 import argparse
-from engine.querier import querier
-import yaml
-import logging
-import logging.config
-import traceback
-from repos import *
-from historic import *
+import sys
+from engine.querier import Querier
 
 # Create the arguments parser
 parser = argparse.ArgumentParser()
@@ -21,7 +16,7 @@ parser.add_argument('--query', dest='query', type=str, required=False)
 parser.add_argument('--content', dest='content', type=str, required=False)
 
 
-if __name__ == "__main__":
+def main() -> int:
     args = parser.parse_args()
 
     if args.debug:
@@ -29,7 +24,22 @@ if __name__ == "__main__":
     else:
         __debug_flag = False
 
+    querier = Querier(args.__dict__)
+    querier.configure()
+    querier.search(__debug_flag)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
     exit(1) # FIXME: Esto lo puse solo para frenar la ejecución mientras hago la migración
+
+    args = parser.parse_args()
+
+    if args.debug:
+        __debug_flag = True
+    else:
+        __debug_flag = False
 
     querier(__debug_flag, args.query, args.content, args.fromYear, args.title)
 

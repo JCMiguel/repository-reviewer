@@ -6,13 +6,11 @@ from historic.report import *
 from datetime import datetime
 
 
-class Search:
-
+class DataSearch:
     RESULTS_BASE_FILENAME = 'results\\articles_table.csv'
     ID_Format = "%y%m%d%H%M%S"
-
-    def __init__(self, search_params:dict):
-        self._id = datetime.now().strftime( Search.ID_Format )
+    def __init__(self, search_params: dict):
+        self._id = datetime.now().strftime( DataSearch.ID_Format )
         self._report_data = None
         self._tags = []
         self._search_params = search_params
@@ -25,7 +23,7 @@ class Search:
         Returns None if the file does not exist"""
         if self._fn:
             return self._fn
-        fn = Search.RESULTS_BASE_FILENAME.split(sep='.')
+        fn = DataSearch.RESULTS_BASE_FILENAME.split(sep='.')
         fn.insert( 1, "_"+ self._id +"." )
         fn = ''.join(fn)
         if path.isfile( fn ):

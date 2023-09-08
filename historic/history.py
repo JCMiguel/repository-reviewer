@@ -16,7 +16,7 @@ class History:
         return History.__df
 
 
-    def Add(search:Search):
+    def Add(search : DataSearch):
         df_list = [ pd.DataFrame( search.to_dict_format(True) ).set_index('ID') ]
         try:    df_list.append( History.Data() )
         except: pass
@@ -92,7 +92,7 @@ class History:
     def Filter_date( d_from:str=None, d_to:str=None) -> list:
         df = History.Data()
         filter = [True] * df.index.size
-        id_len = len( Search.ID_Format )
+        id_len = len( DataSearch.ID_Format )
         # Verify dates input are not formated
         if d_from:
             filter &= df.index > int( d_from.ljust(id_len,'0') )
