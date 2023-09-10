@@ -12,6 +12,7 @@ class Indexer(BasicEngine):
     """
         Una clase destinada a hacer el fichaje de artículos
     """
+    INDEX_STORAGE_FILE = 'results\\fichas.csv'
     def __init__(self):
         super().__init__()
 
@@ -101,9 +102,9 @@ class Indexer(BasicEngine):
             get_index_card
         """
         # print(f'args: {args}')
-        if os.path.isfile('fichas.csv'):
+        if os.path.isfile(Indexer.INDEX_STORAGE_FILE):
             # Abro el csv con pandas
-            fichas = self.__load_dataframe('fichas.csv')
+            fichas = self.__load_dataframe(Indexer.INDEX_STORAGE_FILE)
             for i in range(0, len(fichas.index)):
                 # TODO: Pendiente agregar un filtro acá en función de algún argumento de ejecución
                 if self.__match_with_filter(vars(args), fichas.iloc[[i]], i):
@@ -123,9 +124,9 @@ class Indexer(BasicEngine):
         """
             get_index_card
         """
-        if os.path.isfile('fichas.csv'):
+        if os.path.isfile(Indexer.INDEX_STORAGE_FILE):
             # Abro el csv con pandas
-            fichas = self.__load_dataframe('fichas.csv')
+            fichas = self.__load_dataframe(Indexer.INDEX_STORAGE_FILE)
             print('----------------------------------------------------')
             print('              FICHA A EDITAR')
             print('----------------------------------------------------')
@@ -141,7 +142,7 @@ class Indexer(BasicEngine):
                 print(edited_ficha)
                 fichas.loc[edited_ficha.index, :] = edited_ficha[:]
                 print(fichas)
-                fichas.to_csv('fichas.csv', encoding='utf-8', index=False)
+                fichas.to_csv(Indexer.INDEX_STORAGE_FILE, encoding='utf-8', index=False)
             else:
                 print("Cancelando edición")
         else:
@@ -152,9 +153,9 @@ class Indexer(BasicEngine):
         """
             get_index_card
         """
-        if os.path.isfile('fichas.csv'):
+        if os.path.isfile(Indexer.INDEX_STORAGE_FILE):
             # Abro el csv con pandas
-            fichas = self.__load_dataframe('fichas.csv')
+            fichas = self.__load_dataframe(Indexer.INDEX_STORAGE_FILE)
             print('----------------------------------------------------')
             print('              FICHA A EDITAR')
             print('----------------------------------------------------')
@@ -164,7 +165,7 @@ class Indexer(BasicEngine):
                 print(f' > {item_name}:\n    {fichas[item_name].values[args.index]}')
             if self.__input_a_boolean("¿Está seguro que desea eliminar esta ficha?"):
                 fichas = fichas.drop(labels=args.index, axis=0)
-                fichas.to_csv('fichas.csv', encoding='utf-8', index=False)
+                fichas.to_csv(Indexer.INDEX_STORAGE_FILE, encoding='utf-8', index=False)
             else:
                 print("Cancelando borrado")
         else:
@@ -179,9 +180,9 @@ class Indexer(BasicEngine):
         print('Ingrese los datos pedidos a continuación')
         new_dict = self.__index_an_article()
 
-        if os.path.isfile('fichas.csv'):
+        if os.path.isfile(Indexer.INDEX_STORAGE_FILE):
             # Abro el csv con pandas
-            fichas = self.__load_dataframe('fichas.csv')
+            fichas = self.__load_dataframe(Indexer.INDEX_STORAGE_FILE)
             # FIXME: Esta línea rompe si el archivo existe pero no tiene contenido.
             new_ficha = pd.DataFrame(new_dict, index=[len(fichas) + 1])
             frames = [fichas, new_ficha]
@@ -190,5 +191,5 @@ class Indexer(BasicEngine):
             fichas = pd.DataFrame(new_dict, index=[0])
             fichas.astype(self._base_dict_df)
 
-        fichas.to_csv('fichas.csv', encoding='utf-8', index=False)
+        fichas.to_csv(Indexer.INDEX_STORAGE_FILE, encoding='utf-8', index=False)
         return 0
