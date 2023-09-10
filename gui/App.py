@@ -1,5 +1,6 @@
 import customtkinter as ctk
 
+from .results_page import ResultsPage
 from .history_page import HistoryPage
 from .indexer_page import IndexerPage
 from .log_frame import LogsFrame
@@ -33,7 +34,7 @@ class App(ctk.CTk):
         container.grid_rowconfigure(0, weight=1)
 
         self.frames = {}
-        for F in (QuerierPage, IndexerPage, HistoryPage):
+        for F in (QuerierPage, IndexerPage, HistoryPage, ResultsPage):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
@@ -57,6 +58,7 @@ class App(ctk.CTk):
         '''Show a frame for the given page name'''
         frame = self.frames[page_name]
         frame.tkraise()
+        frame.on_showing()
 
     def create_sidebar(self, sidebar_frame: ctk.CTkFrame):
         # create sidebar frame with widgets

@@ -13,7 +13,7 @@ class repo(ABC):
     """
         Abstract class for repository definition.
     """
-    articles_fn = 'table_articles.csv'
+    articles_fn = 'results/table_articles.csv'
     articles_df = pd.DataFrame(columns=["Title", "Found in", "Year"])
 
     def __init__(self, repo_params: dict, config_params: dict, debug: bool = False):
@@ -110,6 +110,9 @@ class repo(ABC):
         # repo.articles_df = repo.articles_df.append( self.articles_dataframe, ignore_index=True, verify_integrity=False)
         # Mejor recurrir a una version mas joven (2.0.0)
         repo.articles_df = pd.concat( [repo.articles_df, self.articles_dataframe], ignore_index=True, verify_integrity=False )
-        repo.articles_df.to_csv(repo.articles_fn, encoding='utf-8')
+        repo.articles_df.to_csv(repo.articles_fn, encoding='utf-8', index_label='ID')
         self.logger.info("{} articles exported".format(len(self.articles_dataframe)))
         # print("Soy " + type(self).__name__+ ", pero aun no se exportar a CSV! Toy chiquito :3")
+
+    def export_dataframe(self=None):
+        return repo.articles_df

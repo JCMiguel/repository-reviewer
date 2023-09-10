@@ -1,13 +1,27 @@
-import customtkinter as ctk
+from .base_page import *
 from .misc import execute
 from datetime import datetime
 from engine.querier import querier
 
 
-class QuerierPage(ctk.CTkFrame):
+class QuerierPage(BasePageFrame):
+
     def __init__(self, parent, controller):
-        ctk.CTkFrame.__init__(self, parent)
-        self.controller = controller
+        BasePageFrame.__init__(self, parent, controller)
+
+
+    def on_init(self):
+        pass
+
+    def on_showing(self):
+        pass
+
+    def on_hiding(self):
+        pass
+
+    def on_resume(self):
+        pass
+
 
         # create tabview
         # TODO: Este flag es solo para que el código se adapte más fácil durante pruebas. A futuro hay que sacarlo...
