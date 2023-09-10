@@ -15,7 +15,7 @@ class repo(ABC):
     """
         Abstract class for repository definition.
     """
-    articles_fn = 'table_articles.csv'
+    articles_fn = 'results\\table_articles.csv'
     articles_df = pd.DataFrame(columns=["Title", "Found in", "Year"])
 
     def __init__(self, repo_params: dict, config_params: dict, debug: bool = False):
