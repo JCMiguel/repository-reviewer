@@ -8,7 +8,7 @@ class QuerierPage(BasePageFrame):
 
     def __init__(self, parent, controller):
         BasePageFrame.__init__(self, parent, controller)
-
+        self.create_tabview( parent )
 
     def on_init(self):
         pass
@@ -20,9 +20,12 @@ class QuerierPage(BasePageFrame):
         pass
 
     def on_resume(self):
+        pass  
+
+    def set_contextual(self, data):
         pass
 
-
+    def create_tabview(self, parent):
         # create tabview
         # TODO: Este flag es solo para que el código se adapte más fácil durante pruebas. A futuro hay que sacarlo...
         __use_tabs_debug = False

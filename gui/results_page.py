@@ -41,10 +41,15 @@ class ResultsPage(BasePageFrame):
         self.show_results()
 
     def on_hiding(self):
-        pass
+        print("ResultsPage.on_hiding() --> self.treeview = None")
+        self.treeview.forget()
 
     def on_resume(self):
         pass
+    
+    def set_contextual(self, data):
+        if isinstance(data, pd.DataFrame):
+            ResultsPage.Load( data )
 
 
     def show_results(self, df:pd.DataFrame=None):
@@ -86,20 +91,24 @@ class ResultsPage(BasePageFrame):
 
 
     def config_treeview(self):
+        """ Treeview columns config and headings set """
         num_columns = len(self.titles)
         total_width = 1000
         main_width = int(total_width * 0.75)
         other_width = int((total_width-main_width)/num_columns)
-        # Treeview columns config and headings set.
+        # First column with particular its particular main configuration
         self.treeview.column(0, stretch=True,  anchor="w", width=main_width)
         self.treeview.heading("#0", text=self.titles[0], anchor="center")
-
+        # Next columns with their data
         for num_col in range(1, num_columns):
             self.treeview.column(num_col, stretch=False,  anchor="w", width=other_width)
             self.treeview.heading(num_col, text=self.titles[num_col], anchor="center")
         else:
+            # And additional column for showing extra information
             self.treeview.column(num_col+1, stretch=False,  anchor="w", width=other_width)
             self.treeview.heading(num_col+1, text="Additional info", anchor="center")
+        # Event bindings
+        self.treeview.bind("<Double-1>", self.on_double_click)
 
 
     def load_treeview(self, df:pd.DataFrame):
@@ -121,3 +130,10 @@ class ResultsPage(BasePageFrame):
                                  text=article_value_list[0],  # Title
                                  values=article_value_list[2:])
         # else: self.treeview.see( idx )
+
+
+    def on_double_click(self, event):
+        item_id = self.treeview.selection()[0]
+        article = ResultsPage.dFrame.loc[ int(item_id) ]
+        print("you clicked on", str(item_id))
+        self.controller.show_frame('IndexerPage', article)

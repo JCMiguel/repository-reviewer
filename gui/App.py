@@ -54,11 +54,16 @@ class App(ctk.CTk):
         self.sidebar_frame = ctk.CTkFrame(self, width=140, corner_radius=0)
         self.create_sidebar(self.sidebar_frame)
 
-    def show_frame(self, page_name):
+    def show_frame(self, page_name, contextual_data=None):
         '''Show a frame for the given page name'''
-        frame = self.frames[page_name]
-        frame.tkraise()
-        frame.on_showing()
+        if hasattr(self, 'last_frame'):
+            self.last_frame.on_hiding()
+        on_top_frame = self.frames[page_name]
+        on_top_frame.tkraise()
+        if contextual_data is not None:
+            on_top_frame.set_contextual( contextual_data )
+        on_top_frame.on_showing()
+        self.last_frame = on_top_frame
 
     def create_sidebar(self, sidebar_frame: ctk.CTkFrame):
         # create sidebar frame with widgets

@@ -18,3 +18,8 @@ class BasePageFrame(ctk.CTkFrame, ABC):
     @abstractmethod
     def on_hiding(self):
         pass
+
+    @abstractmethod
+    def set_contextual(self, data):
+        pass
+    

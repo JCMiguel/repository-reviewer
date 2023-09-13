@@ -1,5 +1,5 @@
 from .base_page import *
-
+import pandas as pd
 
 class IndexerPage(BasePageFrame):
 
@@ -10,6 +10,7 @@ class IndexerPage(BasePageFrame):
         button = ctk.CTkButton(self, text="Go to the start page",
                            command=self.dummy_action)
         button.pack()
+        self.preview_article = None
 
     def dummy_action(self):
         print("dummy function wip")
@@ -20,7 +21,8 @@ class IndexerPage(BasePageFrame):
         pass
 
     def on_showing(self):
-        pass
+        if self.preview_article is not None:
+            print(self.preview_article)
 
     def on_hiding(self):
         pass
@@ -28,3 +30,6 @@ class IndexerPage(BasePageFrame):
     def on_resume(self):
         pass
 
+    def set_contextual(self, data):
+        if isinstance(data, pd.Series):
+            self.preview_article = data

@@ -23,11 +23,14 @@ class HistoryPage(BasePageFrame):
         pass
 
     def on_hiding(self):
+        print("Byeee desde history_page")
         pass
 
     def on_resume(self):
         pass
-
+    
+    def set_contextual(self, data):
+        pass
 
     def dummy_action(self):
         print("dummy function wip")
