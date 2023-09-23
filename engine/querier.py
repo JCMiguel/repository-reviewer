@@ -48,11 +48,13 @@ class Querier(DataSearch, BasicEngine):
     """
         Una clase destinada a hacer la busqueda de artículos
     """
+
     def __init__(self, search_params: dict):
         BasicEngine.__init__(self)
         DataSearch.__init__(self, search_params)
         self.__config_loaded = False
         self.__config_filename = "config/querier_config.yml"
+        self._articles_dataframe = None
 
     def __check_config(self) -> bool:
         return self.__config_loaded
@@ -95,8 +97,10 @@ class Querier(DataSearch, BasicEngine):
                         else:
                             repo.load_query(self._search_params['query'])
                         self.append_partial_res(repo.search())
-                        repo.export_csv()
+                        self._articles_dataframe = repo.concat_to_dataframe( self._articles_dataframe )
                         del repo
             except Exception:
                 traceback.print_exc()
+        # NOTE: La forma de invocar al export quedo media fea
+        abc_def.repo.export_csv( self._articles_dataframe, BasicEngine.articles_fn )
         History.Add(self)

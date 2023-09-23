@@ -15,8 +15,6 @@ class repo(ABC):
     """
         Abstract class for repository definition.
     """
-    articles_fn = 'results\\table_articles.csv'
-    articles_df = pd.DataFrame(columns=["Title", "Found in", "Year"])
 
     def __init__(self, repo_params: dict, config_params: dict, debug: bool = False):
         self.url = repo_params['url']
@@ -29,7 +27,7 @@ class repo(ABC):
         self.validate_dictionary()
         self.add_query_param(self.apikey, 'apikey')
         self.add_query_param('25', 'max_records_per_page')
-        self.articles_dataframe = pd.DataFrame(columns=["Title", "Found in", "Year"])
+        self.articles_dataframe = self.init_dataframe()
 
         # Config de Logs
         logging.config.dictConfig(self.config_params['logs'])
@@ -37,6 +35,10 @@ class repo(ABC):
             self.logger = logging.getLogger(repo_params['logger'])
         else:
             self.logger = logging.getLogger('root')
+
+    @classmethod
+    def init_dataframe(self):
+        return pd.DataFrame(columns=["Title", "Found in", "Year"])
 
     @abstractmethod
     def build_dictionary(self):
@@ -108,14 +110,17 @@ class repo(ABC):
     def say_hello(self):
         self.logger.debug("Hola! Soy " + type(self).__name__)
 
-    def export_csv(self):
-        # Era un repo mas viejecito (1.3.4) y me olvide como hacer appends...
-        # repo.articles_df = repo.articles_df.append( self.articles_dataframe, ignore_index=True, verify_integrity=False)
-        # Mejor recurrir a una version mas joven (2.0.0)
-        repo.articles_df = pd.concat( [repo.articles_df, self.articles_dataframe], ignore_index=True, verify_integrity=False )
-        repo.articles_df.to_csv(repo.articles_fn, encoding='utf-8')
-        self.logger.info("{} articles exported".format(len(self.articles_dataframe)))
-        # print("Soy " + type(self).__name__+ ", pero aun no se exportar a CSV! Toy chiquito :3")
+    @classmethod
+    def export_csv(self, source_df:pd.DataFrame, filename:str):
+        source_df.to_csv(filename, encoding='utf-8', index_label='ID')
+        if hasattr(self, 'logger'):
+            self.logger.info("{} articles exported".format(len(source_df)))
+
+    def concat_to_dataframe(self, main_df:pd.DataFrame) -> pd.DataFrame:
+        if main_df is None:
+            return self.articles_dataframe
+        self.logger.info("{} articles added".format(len(self.articles_dataframe)))
+        return pd.concat( [main_df, self.articles_dataframe], ignore_index=True, verify_integrity=False )
 
     def build_report(self, publication_dates_array) -> Report:
         time_span = None

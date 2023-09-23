@@ -13,7 +13,7 @@ class QuerierPage(ctk.CTkFrame):
 
         # create tabview
         # TODO: Este flag es solo para que el código se adapte más fácil durante pruebas. A futuro hay que sacarlo...
-        __use_tabs_debug = False
+        __use_tabs_debug = True
         view = None
         second_tab = view
         if __use_tabs_debug:

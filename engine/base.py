@@ -12,6 +12,8 @@ class BasicEngine:
         Esta clase pretende unificar una base funcional para el
         querier, el indexer y cualquier otro futuro motor.
     """
+    articles_fn = 'results\\table_articles.csv'
+
     def __init__(self):
         pass
 
