@@ -79,7 +79,7 @@ class Querier(DataSearch, BasicEngine):
         print("Cargando clases de repositorios")
         print(self._cfg_dict)
         for repo_name in self._cfg_dict['repos'].keys():
-            try:
+            #try:
                 # La línea siguiente invoca a la clase dentro del package.
                 # Ejemplo: invoca al constructor ieee() de repos.ieee_def
                 if self._cfg_dict['repos'][repo_name]['enabled'] is True:
@@ -99,8 +99,8 @@ class Querier(DataSearch, BasicEngine):
                         self.append_partial_res(repo.search())
                         self._articles_dataframe = repo.concat_to_dataframe( self._articles_dataframe )
                         del repo
-            except Exception:
-                traceback.print_exc()
-        # NOTE: La forma de invocar al export quedo media fea
+            # except Exception:
+            #     traceback.print_exc()
+        # NOTE: Esta forma de invocar al export no es la mas prolija: modulo.clase.metodo
         abc_def.repo.export_csv( self._articles_dataframe, BasicEngine.articles_fn )
         History.Add(self)
