@@ -46,11 +46,15 @@ class repo(ABC):
 
     @classmethod
     def init_dataframe(self, config_params: dict = None):
-        # TODO: self.config_params
-        print(config_params)
+        columns_list = []
+        for column in config_params['results_format']:
+            if column.get('key') is not None and column.get('key') != '' and \
+                    column.get('column_name') is not None:
+                columns_list.append(column['column_name'])
+
         # Reemplaza el valor por defecto por la lista provista al constructor
-        if config_params is not None and repo.articles_df_replaced_flag is False:
-            repo.articles_df = pd.DataFrame(columns=['Prueba', 'Atomic', 'Bomb'])
+        if columns_list is not None and repo.articles_df_replaced_flag is False:
+            repo.articles_df = pd.DataFrame(columns=columns_list)
             repo.articles_df_replaced_flag = True # FIXME: Sin este flag, la tabla se sobreescribe por cada construcción
 
 
@@ -110,7 +114,7 @@ class repo(ABC):
         return self.debug
 
     def add_to_dataframe(self, title: str = "", year: str = ""):
-        self.articles_dataframe.loc[len(self.articles_dataframe)] = [title, type(self).__name__, year]
+        self.articles_dataframe.loc[len(self.articles_dataframe)] = [title, type(self).__name__, year]  # FIXME: D:
         pass
 
     def say_hello(self):

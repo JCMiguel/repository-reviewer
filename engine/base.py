@@ -67,7 +67,7 @@ class BasicEngine:
     def __read_yaml(self, file_path: str) -> bool:
         __success_flag = True
         try:
-            with open(file_path, "r") as f:
+            with open(file=file_path, mode="r", encoding="utf-8") as f:
                 self._cfg_dict = self._cfg_dict | yaml.safe_load(f)
         except EnvironmentError:
             __success_flag = False

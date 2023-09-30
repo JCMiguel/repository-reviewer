@@ -88,7 +88,6 @@ class Querier(DataSearch, BasicEngine):
         #  búsqueda.
 
         print("Cargando clases de repositorios")
-        print(self._cfg_dict)
         for repo_name in self._cfg_dict['repos'].keys():
             try:
                 # La línea siguiente invoca a la clase dentro del package.
