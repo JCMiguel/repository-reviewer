@@ -32,7 +32,7 @@ class ResultsPage(BasePageFrame):
 
     def __init__(self, parent, controller):
         BasePageFrame.__init__(self, parent, controller)
-
+        self.scrollbar = None
 
     def on_init(self):
         pass
@@ -56,7 +56,7 @@ class ResultsPage(BasePageFrame):
         if (df is not None):
             ResultsPage.Load( df )
         if (ResultsPage.dFrame is None):
-            ResultsPage.Load(filename="results/table_articles.csv")
+            ResultsPage.Load(filename="results/table_articles.csv")  # TODO: Obtener ruta o dF desde donde se debe
         self.titles = self.process_titles()
         self.create_treeview()
 
@@ -74,18 +74,19 @@ class ResultsPage(BasePageFrame):
 
     def create_treeview(self):
         # Scrollbar
-        scrollbar = ttk.Scrollbar(self)
-        scrollbar.pack(side="right", fill="y")
+        if self.scrollbar is None:
+            self.scrollbar = ttk.Scrollbar(self)
+            self.scrollbar.pack(side="right", fill="y")
         # Treeview
         self.treeview = ttk.Treeview(
             self,
             selectmode="browse",
-            yscrollcommand=scrollbar.set,
+            yscrollcommand=self.scrollbar.set,
             columns=tuple([enum[0]+1 for enum in enumerate(self.titles)]),  # (1, 2),
             height=10,
         )
         self.treeview.pack(expand=True, fill="both")
-        scrollbar.config(command=self.treeview.yview)
+        self.scrollbar.config(command=self.treeview.yview)
         self.config_treeview()
         self.load_treeview( ResultsPage.dFrame )
 
