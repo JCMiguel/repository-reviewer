@@ -7,7 +7,8 @@ from . import abc_def
 # Clase dedicada a búsquedas en IEEEXplore
 class ieee(abc_def.repo):
     '''This is a docstring. I have created a new class'''
-    def __init__(self, repo_params:dict, config_params:dict, debug:bool=False):
+
+    def __init__(self, repo_params: dict, config_params: dict, debug: bool = False):
         super().__init__(repo_params, config_params, debug)
         self.logger.debug(self.url)
 

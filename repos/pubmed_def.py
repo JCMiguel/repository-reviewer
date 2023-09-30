@@ -31,7 +31,8 @@ class pubmed(abc_def.repo):
     '''
     Class to excecute searches in the NCBI (National Center for Biotechnology Information) PubMed database.
     Extends a generic abstract interface definition called abd_ref.repo to handle any API repository'''
-    def __init__(self, repo_params:dict, config_params:dict, debug:bool=False):
+
+    def __init__(self, repo_params: dict, config_params: dict, debug: bool = False):
         super().__init__(repo_params, config_params, debug)
         self.extend_dictionary(config_params)
 

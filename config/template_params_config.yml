@@ -1,0 +1,35 @@
+params:
+  tool-name: repository-reviewer
+  version: 0.1.2
+  #email: xxx@mail.com
+  #validate-certificate: false
+  logs:
+    version: 1
+    formatters:
+      simple:
+        format: "%(asctime)s - %(name)s - %(levelname)s: [%(module)s] %(message)s"
+    handlers:
+      console:
+        class: logging.StreamHandler
+        level: DEBUG
+        formatter: simple
+        stream: ext://sys.stdout
+    loggers:
+      default:
+        level: DEBUG
+        handlers:
+        - console
+        propagate: 'no'
+    root:
+      level: NOTSET
+      handlers: []
+  results_format:
+    - column_name:  'Título'
+      key:          'title'
+      details:      'Tìtulo completo del artículo.'
+    - column_name:  'Repositorio'
+      key:          'repo'
+      details:      'Repositorio donde se encontró el artículo'
+    - column_name:  'Año de publicación'
+      key:          'year'
+      details:      'Año en que se publicó el artículo'
