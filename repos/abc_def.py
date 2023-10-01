@@ -47,7 +47,6 @@ class repo(ABC):
         # Inicializa el dataframe particular de la clase en función del global
         self.articles_dataframe = pd.DataFrame(columns=repo.articles_df.columns)
 
-
     @classmethod
     def init_dataframe(self, config_params: dict = None):
         for column in config_params['results_format']:
@@ -65,7 +64,6 @@ class repo(ABC):
         if repo.articles_df_replaced_flag is False:
             repo.articles_df = pd.DataFrame(columns=repo.order_of_columns)
             repo.articles_df_replaced_flag = True # FIXME: Sin este flag, la tabla se sobreescribe por cada construcción
-
 
     @abstractmethod
     def build_dictionary(self):
