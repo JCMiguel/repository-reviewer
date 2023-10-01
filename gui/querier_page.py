@@ -27,80 +27,71 @@ class QuerierPage(BasePageFrame):
         pass
 
     def create_tabview(self, parent):
-        # create tabview
-        # TODO: Este flag es solo para que el código se adapte más fácil durante pruebas. A futuro hay que sacarlo...
-        __use_tabs_debug = False
+        def_txt = "Inserte texto aquí"
         view = None
         second_tab = view
-        if __use_tabs_debug:
-            print(parent.cget("width"))
-            self.tabview = ctk.CTkTabview(self, width=parent.cget("width"))
-            self.tabview.grid(row=0, column=0, padx=(20, 20), pady=(20, 20), sticky="ew")
-            self.tabview.add("Búsqueda básica")
-            self.tabview.add("Búsqueda avanzada")
-            self.tabview.tab("Búsqueda básica").grid_columnconfigure(0, weight=1)  # configure grid of individual tabs
-            self.tabview.tab("Búsqueda avanzada").grid_columnconfigure(0, weight=1)
-            view = self.tabview.tab("Búsqueda básica")
-            second_tab = self.tabview.tab("Búsqueda avanzada")
-        else:
-            view = self
+        self.tabview = ctk.CTkTabview(self, width=parent.cget("width"))
+        self.tabview.pack(side="top", padx=20, pady=10, fill="x")
+        self.tabview.add("Búsqueda básica")
+        self.tabview.add("Búsqueda avanzada")
+        self.tabview.tab("Búsqueda básica")
+        self.tabview.tab("Búsqueda avanzada")
+        view = self.tabview.tab("Búsqueda básica")
+        second_tab = self.tabview.tab("Búsqueda avanzada")
 
         # Tab - Búsqueda básica
-        self.querier_tab_title_lbl = ctk.CTkLabel(view, text="Title", anchor="w",
-                                                  font=ctk.CTkFont(weight="bold"))
-        self.querier_tab_title_lbl.pack(side="top", anchor="w", padx=20, pady=0)
-        self.querier_tab_entry_title = ctk.CTkEntry(view, placeholder_text="Inserte texto aquí")
-        self.querier_tab_entry_title.pack(side="top", padx=20, pady=5, fill="x")
+        self.querier_title_lbl = ctk.CTkLabel(view, text="Title", anchor="w",
+                                              font=ctk.CTkFont(weight="bold"))
+        self.querier_title_lbl.pack(side="top", anchor="w", padx=20, pady=0)
+        self.querier_entry_title = ctk.CTkEntry(view, placeholder_text=def_txt)
+        self.querier_entry_title.pack(side="top", padx=20, pady=5, fill="x")
 
-        self.querier_tab_abs_lbl = ctk.CTkLabel(view, text="Abstract", anchor="w",
+        self.querier_abs_lbl = ctk.CTkLabel(view, text="Abstract", anchor="w",
+                                            font=ctk.CTkFont(weight="bold"))
+        self.querier_abs_lbl.pack(side="top", anchor="w", padx=20, pady=0)
+        self.querier_entry_abs = ctk.CTkEntry(view, placeholder_text=def_txt)
+        self.querier_entry_abs.pack(side="top", padx=20, pady=5, fill="x")
+
+        self.querier_key_lbl = ctk.CTkLabel(view, text="Keywords", anchor="w",
+                                            font=ctk.CTkFont(weight="bold"))
+        self.querier_key_lbl.pack(side="top", anchor="w", padx=20, pady=0)
+        self.querier_entry_key = ctk.CTkEntry(view, placeholder_text=def_txt)
+        self.querier_entry_key.pack(side="top", padx=20, pady=5, fill="x")
+
+        self.querier_content_lbl = ctk.CTkLabel(view, text="Content", anchor="w",
                                                 font=ctk.CTkFont(weight="bold"))
-        self.querier_tab_abs_lbl.pack(side="top", anchor="w", padx=20, pady=0)
-        self.querier_tab_entry_abs = ctk.CTkEntry(view, placeholder_text="Inserte texto aquí")
-        self.querier_tab_entry_abs.pack(side="top", padx=20, pady=5, fill="x")
+        self.querier_content_lbl.pack(side="top", anchor="w", padx=20, pady=0)
+        self.querier_entry_content = ctk.CTkEntry(view, placeholder_text=def_txt)
+        self.querier_entry_content.pack(side="top", padx=20,  pady=5, fill="x")
 
-        self.querier_tab_key_lbl = ctk.CTkLabel(view, text="Keywords", anchor="w",
+        # Tab - Búsqueda avanzada
+        self.querier_content_lbl = ctk.CTkLabel(second_tab, text="Query", anchor="w",
                                                 font=ctk.CTkFont(weight="bold"))
-        self.querier_tab_key_lbl.pack(side="top", anchor="w", padx=20, pady=0)
-        self.querier_tab_entry_key = ctk.CTkEntry(view, placeholder_text="Inserte texto aquí")
-        self.querier_tab_entry_key.pack(side="top", padx=20, pady=5, fill="x")
+        self.querier_content_lbl.pack(side="top", anchor="w", padx=20, pady=0)
+        self.querier_content_lbl = ctk.CTkTextbox(second_tab,
+                                                  height=226, activate_scrollbars=True,
+                                                  border_color="dark grey", border_width=2)
+        self.querier_content_lbl.pack(side="top", padx=20, pady=5, fill="both")
 
-        self.querier_tab_content_lbl = ctk.CTkLabel(view, text="Content", anchor="w",
-                                                    font=ctk.CTkFont(weight="bold"))
-        self.querier_tab_content_lbl.pack(side="top", anchor="w", padx=20, pady=0)
-        self.querier_tab_entry_content = ctk.CTkEntry(view,
-                                                      placeholder_text="Inserte texto aquí")
-        self.querier_tab_entry_content.pack(side="top", padx=20,  pady=5, fill="x")
+        # Common (out of tabs)
+        self.querier_search_btn = ctk.CTkButton(self, text="Search!",
+                                                command=self.search_btn_event)
+        self.querier_search_btn.pack(side="top", padx=20, pady=10)
 
-        self.querier_tab_search_btn = ctk.CTkButton(view, text="Search!",
-                                                    command=self.querier_tab_search_btn_event)
-        self.querier_tab_search_btn.pack(side="top", padx=20, pady=5)
-
-        if __use_tabs_debug:
-            self.querier_tab_content_lbl = ctk.CTkLabel(second_tab, text="Query", anchor="w",
-                                                        font=ctk.CTkFont(weight="bold"))
-            self.querier_tab_content_lbl.pack(side="top", anchor="w", padx=20, pady=0)
-            self.querier_tab_entry_content = ctk.CTkEntry(second_tab,
-                                                          placeholder_text="Inserte texto aquí")
-            self.querier_tab_entry_content.pack(side="top", padx=20, pady=5, fill="both")
-
-            self.querier_tab_search_btn = ctk.CTkButton(second_tab, text="Search!",
-                                                        command=self.querier_tab_search_btn_event)
-            self.querier_tab_search_btn.pack(side="top", padx=20, pady=5)
-
-    def querier_tab_search_btn_event(self):
+    def search_btn_event(self):
         texto = ""
-        texto += f'Title({self.querier_tab_entry_title.get()}) - '
-        texto += f'Abs({self.querier_tab_entry_abs.get()}) - '
-        texto += f'Key({self.querier_tab_entry_key.get()}) - '
-        texto += f'Content({self.querier_tab_entry_content.get()})'
+        texto += f'Title({self.querier_entry_title.get()}) - '
+        texto += f'Abs({self.querier_entry_abs.get()}) - '
+        texto += f'Key({self.querier_entry_key.get()}) - '
+        texto += f'Content({self.querier_entry_content.get()})'
         if texto != 'Title() - Abs() - Key() - Content()':
             print(f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")} - Buscando...\n')
             # TODO: FIXME: al invocar esta función, la pantalla se queda congelada hasta finalizar la búsqueda
             querier_args = build_querier_dictionary(query="",
-                                                    content=self.querier_tab_entry_content.get(),
-                                                    title=self.querier_tab_entry_title.get(),
-                                                    abstract=self.querier_tab_entry_abs.get(),
-                                                    keywords=self.querier_tab_entry_key.get())
+                                                    content=self.querier_entry_content.get(),
+                                                    title=self.querier_entry_title.get(),
+                                                    abstract=self.querier_entry_abs.get(),
+                                                    keywords=self.querier_entry_key.get())
             querier = Querier(querier_args)
             querier.configure()
             querier.search(debug=True)

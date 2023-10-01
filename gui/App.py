@@ -16,7 +16,7 @@ class App(ctk.CTk):
 
         # configure window
         self.title("Repository Reviewer")
-        self.geometry(f"{1100}x{580}")
+        self.geometry(f"{1100}x{680}")
         self.status = False
 
         # configure grid layout (4x4)
@@ -46,7 +46,7 @@ class App(ctk.CTk):
 
         # Results and logs
         self.log_frame = LogsFrame(parent=container, controller=self)
-        self.log_frame.grid(row=1, column=0, sticky="nsew", pady=(10, 0))
+        self.log_frame.grid(row=1, column=0, sticky="s", pady=(20, 0))
 
         # Sidebar
         # FIXME: Intente encapsularlo pero no me gusta como quedo. Hm....

@@ -15,7 +15,7 @@ class repo(ABC):
     """
         Abstract class for repository definition.
     """
-    articles_fn = 'results\\table_articles.csv'
+    articles_fn = 'results\\articles_table.csv'
     articles_df = pd.DataFrame(columns=["Title", "Found in", "Year"])
 
     def __init__(self, repo_params: dict, config_params: dict, debug: bool = False):
@@ -108,12 +108,22 @@ class repo(ABC):
     def say_hello(self):
         self.logger.debug("Hola! Soy " + type(self).__name__)
 
-    def export_csv(self):
-        # Era un repo mas viejecito (1.3.4) y me olvide como hacer appends...
-        # repo.articles_df = repo.articles_df.append( self.articles_dataframe, ignore_index=True, verify_integrity=False)
-        # Mejor recurrir a una version mas joven (2.0.0)
+    ####### [FIXME]: quitarme_cuando_este_el_merge_Ok ###############
+    from datetime import datetime                                   #
+    def DataSearch_format_filename(id:str) -> str:                  #
+        fn = repo.articles_fn.split(sep='.')                        #
+        fn.insert( 1, "_"+ id +"." )                                #
+        fn = ''.join(fn)                                            #
+        return fn                                                   #
+                                                                    #
+    def export_csv(self):                                           #
+        # [FIXME]: el export queda dentro de DataSearch con esto ####
+        ID_Format = "%y%m%d%H%M%S"                                  #
+        id = datetime.now().strftime( ID_Format )                   #
+        results_fn = repo.DataSearch_format_filename( id )          #
+        #############################################################
         repo.articles_df = pd.concat( [repo.articles_df, self.articles_dataframe], ignore_index=True, verify_integrity=False )
-        repo.articles_df.to_csv(repo.articles_fn, encoding='utf-8', index_label='ID')
+        repo.articles_df.to_csv(results_fn, encoding='utf-8', index_label='ID')
         self.logger.info("{} articles exported".format(len(self.articles_dataframe)))
         # print("Soy " + type(self).__name__+ ", pero aun no se exportar a CSV! Toy chiquito :3")
 

@@ -45,6 +45,10 @@ class History:
             else:                       return History.Get_previous( value )
 
     def Get_by_id(id:int) -> pd.Series:
+        """This method expects the complete ID of the history record. Format: yymmddHHMMSS
+        """
+        if not isinstance(id, int):
+            raise TypeError('id parameter in Get_by_id must be int type')
         return History.Data().loc[ id ]
 
     def Get_by_filter(filter:list) -> pd.DataFrame:
@@ -53,6 +57,8 @@ class History:
     def Get_previous(index:int=0) -> pd.Series:
         """Return the historic register that was searched `index` times ago.
         The value of `index` must be greater or equal to 0, lower than 1000"""
+        if not isinstance(id, int):
+            raise TypeError('index parameter in Get_previous must be int type')
         if index < 0: raise ValueError(
             'The value of `index` must be greater or equal to 0, lower than 1000')
         return History.Data().iloc[ index ]
@@ -60,6 +66,8 @@ class History:
     def Get_by_index(index:int) -> pd.Series:
         """Return the historic register with the index counting from the beginning.
         The value of `index` must be negative."""
+        if not isinstance(id, int):
+            raise TypeError('index parameter in Get_by_index must be int type')
         if index >= 0:
             raise ValueError('The value of `index` must be negative')
         return History.Data().iloc[ index ]
@@ -83,7 +91,8 @@ class History:
         # If not match yet, then search on the others fields starting backwards
         for field in reversed( df.columns.drop(field_names) ):
             searching_series:pd.Series = df[ field ]
-            matching_rows = searching_series.str.contains( match ).values
+            try: matching_rows = searching_series.str.contains( match ).values
+            except: pass
             if (True in matching_rows):
                 break
         return History.Get_by_filter( matching_rows )
@@ -99,6 +108,17 @@ class History:
         if d_to:
             filter &= df.index < int( d_to.ljust(id_len,'0') )
         return filter
+
+
+    def Get_by_date(date_range:str, sep=',') -> pd.DataFrame:
+        """ Receive a string parameter representing the date period to search in.
+        If end date is specified, values must be separated by `sep`
+        """
+        if not isinstance(date_range, str):
+            raise TypeError('date_range parameter in Get_by_date must be str type')
+        dates = date_range.split( sep )
+        filter = History.Filter_date( *dates  )
+        return History.Data()[ filter ]
 
 
     def __load_dataframe() -> pd.DataFrame:

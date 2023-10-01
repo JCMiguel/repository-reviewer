@@ -50,13 +50,11 @@ class ResultsPage(BasePageFrame):
     def set_contextual(self, data):
         if isinstance(data, pd.DataFrame):
             ResultsPage.Load( data )
+        elif isinstance(data, str):
+            ResultsPage.Load( filename=data )
 
 
-    def show_results(self, df:pd.DataFrame=None):
-        if (df is not None):
-            ResultsPage.Load( df )
-        if (ResultsPage.dFrame is None):
-            ResultsPage.Load(filename="results/table_articles.csv")  # TODO: Obtener ruta o dF desde donde se debe
+    def show_results(self):
         self.titles = self.process_titles()
         self.create_treeview()
 
@@ -67,6 +65,7 @@ class ResultsPage(BasePageFrame):
             pop_idx = all_titles.index(grouping_column_title)
             all_titles.pop(pop_idx)
         except ValueError as ve:
+            print("List 'all_titles':", all_titles)
             raise ValueError("ResultsPage.dFrame has no title {} to group articles"
                             .format(grouping_column_title))
         return all_titles # except grouping_column_title

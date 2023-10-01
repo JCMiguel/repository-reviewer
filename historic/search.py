@@ -17,15 +17,24 @@ class DataSearch:
         self._fn = None
 
 
-    def get_result_filename(self) -> str:
+    def format_filename(id:str) -> str:
+        """This function takes the base filename, insert the time id before the
+        extension and check if the file exist to return it."""
+        fn = DataSearch.RESULTS_BASE_FILENAME.split(sep='.')
+        fn.insert( 1, "_"+ id +"." )
+        fn = ''.join(fn)
+        return fn
+
+
+    def get_result_filename(self, id:str=None) -> str:
         """If filename has already been set, return it. If not, takes the base filename,
         insert the time id before the extension and check if the file exist to return it.
         Returns None if the file does not exist"""
         if self._fn:
             return self._fn
-        fn = DataSearch.RESULTS_BASE_FILENAME.split(sep='.')
-        fn.insert( 1, "_"+ self._id +"." )
-        fn = ''.join(fn)
+        if id is None:
+            id = self._id
+        fn = DataSearch.format_filename(id)
         if path.isfile( fn ):
             self._fn = fn
         return self._fn
