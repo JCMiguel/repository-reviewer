@@ -74,14 +74,18 @@ class ieee(abc_def.repo):
 
         pub_year_array = []
         for art in range(int(total_records_count)):
-            if art and art%records_per_page == 0:
+            if art and art % records_per_page == 0:
                 self.add_query_param(str(art),'first_index')
                 ans = requests.get(self.url, params=self.query_params,
                                    verify=self.get_config_param('validate-certificate'))
                 self.logger.debug(ans.url)
-            #print("Debug:" + str(art) + " of " + str(total_records_count) + "/" + str(ans.json()['total_records']) + " -- index: " + str(art%records_per_page) )
-            #print(' - ' + ans.json()['articles'][art%records_per_page]['title'])
-            pub_year = ans.json()['articles'][art%records_per_page]['publication_year']
-            self.add_to_dataframe(ans.json()['articles'][art%records_per_page]['title'], pub_year)
-            pub_year_array.append( pub_year )
+
+            pub_year = ans.json()['articles'][art % records_per_page]['publication_year']
+            if pub_year is None:
+                self.logger.warning('This article has no publication date:' + str(article))
+                pub_year = ""
+
+            self.add_to_dataframe(title=ans.json()['articles'][art % records_per_page]['title'],
+                                  year=pub_year)
+            pub_year_array.append(pub_year)
         return self.build_report(pub_year_array)

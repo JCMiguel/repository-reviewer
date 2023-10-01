@@ -16,7 +16,8 @@ class repo(ABC):
         Abstract class for repository definition.
     """
     articles_fn = 'results\\table_articles.csv'
-    articles_df = pd.DataFrame(columns=["Title", "Found in", "Year"])
+    order_of_columns = ['title', 'repo', 'year', 'abstract', 'pub_type', 'authors', 'doi']
+    articles_df = pd.DataFrame(columns=order_of_columns)
     articles_df_replaced_flag = False  # Este flag se usa para ver si hay que inicializar el articles_df con otro valor
 
     def __init__(self, repo_params: dict, config_params: dict, debug: bool = False):
@@ -26,16 +27,6 @@ class repo(ABC):
         self.query_params = {}
         self.config_params = {'validate-certificate': True} | config_params  # Mezcla de diccionarios
         self.debug = debug
-        self.__base_src_fields_def = ["content", "title", "abstract", "keyword", "from_year",
-                                      "to_year", "max_records_per_page", "query"]
-        self.build_dictionary()
-        self.validate_dictionary()
-        self.add_query_param(self.apikey, 'apikey')
-        self.add_query_param('25', 'max_records_per_page')
-        self.init_dataframe(self.config_params)  # FIXME: Esto es temporal
-
-        # Inicializa el dataframe particular de la clase en función del global
-        self.articles_dataframe = pd.DataFrame(columns=repo.articles_df.columns)
 
         # Config de Logs
         logging.config.dictConfig(self.config_params['logs'])
@@ -44,17 +35,35 @@ class repo(ABC):
         else:
             self.logger = logging.getLogger('root')
 
+        # Construir diccionarios para las APIs de cada repo
+        self.build_dictionary()
+        self.validate_dictionary()
+        self.add_query_param(self.apikey, 'apikey')
+        self.add_query_param('25', 'max_records_per_page')
+
+        # Inicializa el formato de salida de los resultados
+        self.init_dataframe(self.config_params)  # FIXME: Esto es temporal, priorizar formato de #39
+
+        # Inicializa el dataframe particular de la clase en función del global
+        self.articles_dataframe = pd.DataFrame(columns=repo.articles_df.columns)
+
+
     @classmethod
     def init_dataframe(self, config_params: dict = None):
-        columns_list = []
         for column in config_params['results_format']:
             if column.get('key') is not None and column.get('key') != '' and \
                     column.get('column_name') is not None:
-                columns_list.append(column['column_name'])
+                try:
+                    # Reemplazo el nombre de la columna, si existe
+                    # TODO: todo esto se puede hacer directamente con un rename de la columna del dataframe
+                    repo.order_of_columns[repo.order_of_columns.index(column['key'])] = column['column_name']
+                except ValueError:
+                    # TODO: ver qué hacer acá, si frenar la ejecución o seguir adelante.
+                    pass
 
         # Reemplaza el valor por defecto por la lista provista al constructor
-        if columns_list is not None and repo.articles_df_replaced_flag is False:
-            repo.articles_df = pd.DataFrame(columns=columns_list)
+        if repo.articles_df_replaced_flag is False:
+            repo.articles_df = pd.DataFrame(columns=repo.order_of_columns)
             repo.articles_df_replaced_flag = True # FIXME: Sin este flag, la tabla se sobreescribe por cada construcción
 
 
@@ -67,7 +76,14 @@ class repo(ABC):
         pass
 
     def validate_dictionary(self):
-        for elem in self.__base_src_fields_def:
+        """
+            Esta función sirve solo para desarrollar nuevas clases de repositorios.
+            Realiza una validación de que estén todos los parámetros necesarios definidos en
+            la clase particular de Repo
+        """
+        __base_src_fields_def = ["content", "title", "abstract", "keyword", "from_year",
+                                 "to_year", "max_records_per_page", "query"]
+        for elem in __base_src_fields_def:
             if elem not in self.dictionary:
                 raise ValueError(f"Missing field '{elem}' in {type(self).__name__}'s dictionary!")
         return True
@@ -113,8 +129,11 @@ class repo(ABC):
         self.logger.debug(str(self.debug))
         return self.debug
 
-    def add_to_dataframe(self, title: str = "", year: str = ""):
-        self.articles_dataframe.loc[len(self.articles_dataframe)] = [title, type(self).__name__, year]  # FIXME: D:
+    def add_to_dataframe(self, title: str = "", year: str = "", abstract: str = "",
+                         pub_type: str = "", authors: str = "", doi: str = ""):
+        # repo.order_of_columns = ['title', 'repo', 'year', 'abstract', 'pub_type', 'authors', 'doi']
+        self.articles_dataframe.loc[len(self.articles_dataframe)] = [title, type(self).__name__, year, abstract,
+                                                                     pub_type, authors, doi]
         pass
 
     def say_hello(self):
