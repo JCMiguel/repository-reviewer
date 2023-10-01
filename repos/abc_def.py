@@ -15,10 +15,6 @@ class repo(ABC):
     """
         Abstract class for repository definition.
     """
-    articles_fn = 'results\\table_articles.csv'
-    order_of_columns = ['title', 'repo', 'year', 'abstract', 'pub_type', 'authors', 'doi']
-    articles_df = pd.DataFrame(columns=order_of_columns)
-    articles_df_replaced_flag = False  # Este flag se usa para ver si hay que inicializar el articles_df con otro valor
 
     def __init__(self, repo_params: dict, config_params: dict, debug: bool = False):
         self.url = repo_params['url']
@@ -27,6 +23,11 @@ class repo(ABC):
         self.query_params = {}
         self.config_params = {'validate-certificate': True} | config_params  # Mezcla de diccionarios
         self.debug = debug
+        self.build_dictionary()
+        self.validate_dictionary()
+        self.add_query_param(self.apikey, 'apikey')
+        self.add_query_param('25', 'max_records_per_page')
+        self.articles_dataframe = repo.init_dataframe(self.config_params)
 
         # Config de Logs
         logging.config.dictConfig(self.config_params['logs'])
@@ -35,35 +36,15 @@ class repo(ABC):
         else:
             self.logger = logging.getLogger('root')
 
-        # Construir diccionarios para las APIs de cada repo
-        self.build_dictionary()
-        self.validate_dictionary()
-        self.add_query_param(self.apikey, 'apikey')
-        self.add_query_param('25', 'max_records_per_page')
-
-        # Inicializa el formato de salida de los resultados
-        self.init_dataframe(self.config_params)  # FIXME: Esto es temporal, priorizar formato de #39
-
-        # Inicializa el dataframe particular de la clase en función del global
-        self.articles_dataframe = pd.DataFrame(columns=repo.articles_df.columns)
-
     @classmethod
     def init_dataframe(self, config_params: dict = None):
+        order_of_columns = ['title', 'repo', 'year', 'abstract', 'pub_type', 'authors', 'doi']
+        # Renombro la columna, si es que existe
         for column in config_params['results_format']:
             if column.get('key') is not None and column.get('key') != '' and \
                     column.get('column_name') is not None:
-                try:
-                    # Reemplazo el nombre de la columna, si existe
-                    # TODO: todo esto se puede hacer directamente con un rename de la columna del dataframe
-                    repo.order_of_columns[repo.order_of_columns.index(column['key'])] = column['column_name']
-                except ValueError:
-                    # TODO: ver qué hacer acá, si frenar la ejecución o seguir adelante.
-                    pass
-
-        # Reemplaza el valor por defecto por la lista provista al constructor
-        if repo.articles_df_replaced_flag is False:
-            repo.articles_df = pd.DataFrame(columns=repo.order_of_columns)
-            repo.articles_df_replaced_flag = True # FIXME: Sin este flag, la tabla se sobreescribe por cada construcción
+                order_of_columns[order_of_columns.index(column['key'])] = column['column_name']
+        return pd.DataFrame(columns=order_of_columns)
 
     @abstractmethod
     def build_dictionary(self):
@@ -129,7 +110,7 @@ class repo(ABC):
 
     def add_to_dataframe(self, title: str = "", year: str = "", abstract: str = "",
                          pub_type: str = "", authors: str = "", doi: str = ""):
-        # repo.order_of_columns = ['title', 'repo', 'year', 'abstract', 'pub_type', 'authors', 'doi']
+        # init_dataframe -> order_of_columns = ['title', 'repo', 'year', 'abstract', 'pub_type', 'authors', 'doi']
         self.articles_dataframe.loc[len(self.articles_dataframe)] = [title, type(self).__name__, year, abstract,
                                                                      pub_type, authors, doi]
         pass
@@ -137,14 +118,17 @@ class repo(ABC):
     def say_hello(self):
         self.logger.debug("Hola! Soy " + type(self).__name__)
 
-    def export_csv(self):
-        # Era un repo mas viejecito (1.3.4) y me olvide como hacer appends...
-        # repo.articles_df = repo.articles_df.append( self.articles_dataframe, ignore_index=True, verify_integrity=False)
-        # Mejor recurrir a una version mas joven (2.0.0)
-        repo.articles_df = pd.concat([repo.articles_df, self.articles_dataframe], ignore_index=True, verify_integrity=False)
-        repo.articles_df.to_csv(repo.articles_fn, encoding='utf-8', sep='^')
-        self.logger.info("{} articles exported".format(len(self.articles_dataframe)))
-        # print("Soy " + type(self).__name__+ ", pero aun no se exportar a CSV! Toy chiquito :3")
+    @classmethod
+    def export_csv(self, source_df:pd.DataFrame, filename:str):
+        source_df.to_csv(filename, encoding='utf-8', index_label='ID', sep='^')
+        if hasattr(self, 'logger'):
+            self.logger.info("{} articles exported".format(len(source_df)))
+
+    def concat_to_dataframe(self, main_df:pd.DataFrame) -> pd.DataFrame:
+        if main_df is None:
+            return self.articles_dataframe
+        self.logger.info("{} articles added".format(len(self.articles_dataframe)))
+        return pd.concat( [main_df, self.articles_dataframe], ignore_index=True, verify_integrity=False )
 
     def build_report(self, publication_dates_array) -> Report:
         time_span = None
