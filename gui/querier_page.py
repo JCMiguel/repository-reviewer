@@ -1,7 +1,8 @@
+import engine
 from .base_page import *
 from .misc import execute
 from datetime import datetime
-from engine.querier import querier
+from engine.querier import *
 
 
 class QuerierPage(BasePageFrame):
@@ -86,27 +87,23 @@ class QuerierPage(BasePageFrame):
                                                         command=self.querier_tab_search_btn_event)
             self.querier_tab_search_btn.pack(side="top", padx=20, pady=5)
 
-
-
     def querier_tab_search_btn_event(self):
-        # TODO: Work In Progress
         texto = ""
         texto += f'Title({self.querier_tab_entry_title.get()}) - '
         texto += f'Abs({self.querier_tab_entry_abs.get()}) - '
         texto += f'Key({self.querier_tab_entry_key.get()}) - '
         texto += f'Content({self.querier_tab_entry_content.get()})'
-        # HACK: If search is empty then show help. Just a demo of subproces run
         if texto != 'Title() - Abs() - Key() - Content()':
-            # execute("python querier.py -h")
             print(f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")} - Buscando...\n')
             # TODO: FIXME: al invocar esta función, la pantalla se queda congelada hasta finalizar la búsqueda
-            querier(debug=True,
-                    query="",
-                    content=self.querier_tab_entry_content.get(),
-                    title=self.querier_tab_entry_title.get(),
-                    abstract=self.querier_tab_entry_abs.get(),
-                    keywords=self.querier_tab_entry_key.get())
-            # querier(debug: bool, query: str, content: str, from_year: str, title: str, arguments = None)
+            querier_args = build_querier_dictionary(query="",
+                                                    content=self.querier_tab_entry_content.get(),
+                                                    title=self.querier_tab_entry_title.get(),
+                                                    abstract=self.querier_tab_entry_abs.get(),
+                                                    keywords=self.querier_tab_entry_key.get())
+            querier = Querier(querier_args)
+            querier.configure()
+            querier.search(debug=True)
         else:
             print(f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")} - Campos de búsqueda vacíos\n')
 

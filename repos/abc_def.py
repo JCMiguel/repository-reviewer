@@ -5,6 +5,8 @@ import requests
 import logging
 import logging.config
 import pandas as pd
+from historic.report import Report
+from datetime import datetime
 from abc import ABC, abstractmethod
 
 
@@ -13,7 +15,7 @@ class repo(ABC):
     """
         Abstract class for repository definition.
     """
-    articles_fn = 'results/table_articles.csv'
+    articles_fn = 'results\\table_articles.csv'
     articles_df = pd.DataFrame(columns=["Title", "Found in", "Year"])
 
     def __init__(self, repo_params: dict, config_params: dict, debug: bool = False):
@@ -63,7 +65,7 @@ class repo(ABC):
         # TODO: Esto me quedo valido solo para IEEE, tengo que cambiarlo
 
         self.query_params[self.dictionary['query']] = self.parse_query(query)
-        pass
+
 
     def add_query_param(self, value: str, value_type: str) -> None:
         """
@@ -74,8 +76,9 @@ class repo(ABC):
                 - abstract
                 - title
         """
-        self.query_params[self.dictionary[value_type]] = value
-        pass
+        if value is not None:
+            self.query_params[self.dictionary[value_type]] = value
+
 
     def get_config_param(self, name: str):
         """
@@ -91,7 +94,7 @@ class repo(ABC):
     #     pass
 
     @abstractmethod
-    def search(self):
+    def search(self) -> Report:
         pass
 
     def debug_enabled(self):
@@ -116,3 +119,18 @@ class repo(ABC):
 
     def export_dataframe(self=None):
         return repo.articles_df
+
+    def build_report(self, publication_dates_array) -> Report:
+        time_span = None
+        if (publication_dates_array is None):
+            method = self.__class__.__name__ +".build_report( )"
+            raise ValueError("On "+method+": publication_dates_array parameter must be a non-empty array")
+        from_year = self.query_params.get( self.dictionary['from_year'] )
+        if from_year is not None:
+            to_year = self.query_params.get( self.dictionary['to_year'] )
+            if to_year is None:
+                to_year = datetime.now().strftime('%Y-%m-%d')
+            time_span = ( from_year, to_year )
+        r = Report(self.__class__.__name__, self.logger)
+        r.process_dates( publication_dates_array, time_span)
+        return r
