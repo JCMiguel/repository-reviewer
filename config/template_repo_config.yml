@@ -1,0 +1,24 @@
+repos:
+  ieee:
+    url: 'https://ieeexploreapi.ieee.org/api/v1/search/articles?parameter'
+    apikey: WRITE YOUR API KEY HERE!
+    enabled: true
+    logger: 'default'
+
+  scopus:
+    url: 'https://api.elsevier.com/content/search/scopus?httpAccept=application/json'
+    apikey: WRITE YOUR API KEY HERE!
+    enabled: true
+    logger: 'default'
+
+  pubmed:
+    url: ''
+    apikey: WRITE YOUR API KEY HERE!
+    enabled: true
+    logger: 'default'
+
+  springer:
+    url: ''
+    apikey: WRITE YOUR API KEY HERE!
+    enabled: true
+    logger: 'default'

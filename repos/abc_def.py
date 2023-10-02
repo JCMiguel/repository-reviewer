@@ -27,7 +27,7 @@ class repo(ABC):
         self.validate_dictionary()
         self.add_query_param(self.apikey, 'apikey')
         self.add_query_param('25', 'max_records_per_page')
-        self.articles_dataframe = self.init_dataframe()
+        self.articles_dataframe = repo.init_dataframe(self.config_params)
 
         # Config de Logs
         logging.config.dictConfig(self.config_params['logs'])
@@ -37,8 +37,14 @@ class repo(ABC):
             self.logger = logging.getLogger('root')
 
     @classmethod
-    def init_dataframe(self):
-        return pd.DataFrame(columns=["Title", "Found in", "Year"])
+    def init_dataframe(self, config_params: dict = None):
+        order_of_columns = ['title', 'repo', 'year', 'abstract', 'pub_type', 'authors', 'doi']
+        # Renombro la columna, si es que existe
+        for column in config_params['results_format']:
+            if column.get('key') is not None and column.get('key') != '' and \
+                    column.get('column_name') is not None:
+                order_of_columns[order_of_columns.index(column['key'])] = column['column_name']
+        return pd.DataFrame(columns=order_of_columns)
 
     @abstractmethod
     def build_dictionary(self):
@@ -49,11 +55,16 @@ class repo(ABC):
         pass
 
     def validate_dictionary(self):
-        items = ["content", "title", "abstract", "keyword", "from_year",
-                 "to_year", "max_records_per_page", "query"]
-        for item in items:
-            if item not in self.dictionary:
-                raise ValueError(f"Missing field '{item}' in {type(self).__name__}'s dictionary!")
+        """
+            Esta función sirve solo para desarrollar nuevas clases de repositorios.
+            Realiza una validación de que estén todos los parámetros necesarios definidos en
+            la clase particular de Repo
+        """
+        __base_src_fields_def = ["content", "title", "abstract", "keyword", "from_year",
+                                 "to_year", "max_records_per_page", "query"]
+        for elem in __base_src_fields_def:
+            if elem not in self.dictionary:
+                raise ValueError(f"Missing field '{elem}' in {type(self).__name__}'s dictionary!")
         return True
 
     @abstractmethod
@@ -68,7 +79,6 @@ class repo(ABC):
 
         self.query_params[self.dictionary['query']] = self.parse_query(query)
 
-
     def add_query_param(self, value: str, value_type: str) -> None:
         """
             This pretends to do a conversion between args and api params
@@ -81,7 +91,6 @@ class repo(ABC):
         if value is not None:
             self.query_params[self.dictionary[value_type]] = value
 
-
     def get_config_param(self, name: str):
         """
         """
@@ -91,10 +100,6 @@ class repo(ABC):
         else:
             return ''
 
-    # @abstractmethod
-    # def validate_params():
-    #     pass
-
     @abstractmethod
     def search(self) -> Report:
         pass
@@ -103,8 +108,11 @@ class repo(ABC):
         self.logger.debug(str(self.debug))
         return self.debug
 
-    def add_to_dataframe(self, title: str = "", year: str = ""):
-        self.articles_dataframe.loc[len(self.articles_dataframe)] = [title, type(self).__name__, year]
+    def add_to_dataframe(self, title: str = "", year: str = "", abstract: str = "",
+                         pub_type: str = "", authors: str = "", doi: str = ""):
+        # init_dataframe -> order_of_columns = ['title', 'repo', 'year', 'abstract', 'pub_type', 'authors', 'doi']
+        self.articles_dataframe.loc[len(self.articles_dataframe)] = [title, type(self).__name__, year, abstract,
+                                                                     pub_type, authors, doi]
         pass
 
     def say_hello(self):
@@ -112,7 +120,7 @@ class repo(ABC):
 
     @classmethod
     def export_csv(self, source_df:pd.DataFrame, filename:str):
-        source_df.to_csv(filename, encoding='utf-8', index_label='ID')
+        source_df.to_csv(filename, encoding='utf-8', index_label='ID', sep='^')
         if hasattr(self, 'logger'):
             self.logger.info("{} articles exported".format(len(source_df)))
 
@@ -124,7 +132,7 @@ class repo(ABC):
 
     def build_report(self, publication_dates_array) -> Report:
         time_span = None
-        if (publication_dates_array is None):
+        if publication_dates_array is None:
             method = self.__class__.__name__ +".build_report( )"
             raise ValueError("On "+method+": publication_dates_array parameter must be a non-empty array")
         from_year = self.query_params.get( self.dictionary['from_year'] )

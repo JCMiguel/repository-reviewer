@@ -53,7 +53,6 @@ class Querier(DataSearch, BasicEngine):
         BasicEngine.__init__(self)
         DataSearch.__init__(self, search_params)
         self.__config_loaded = False
-        self.__config_filename = "config/querier_config.yml"
         self._articles_dataframe = None
 
     def __check_config(self) -> bool:
@@ -61,7 +60,7 @@ class Querier(DataSearch, BasicEngine):
 
     def configure(self):
         print("Cargando archivo de configuración")
-        if self._load_config(self.__config_filename):
+        if self._configure_repos() and self._configure_params():
             self.__config_loaded = True
         else:
             self.__config_loaded = False
@@ -71,21 +70,34 @@ class Querier(DataSearch, BasicEngine):
             print("ERROR: Querier no configurado!")
             return
 
-        # cfg = self._read_yaml("config/querier_config.yml")  # TODO: Pendiente hacer chequeo de errores
-
         if debug:
             print("El debug esta habilitado")
 
+        # TODO: validar errores en el config.yml. hay que asegurar que exista todo lo necesario.
+        # Ejemplo: url, params, apikey, etc.
+        # Y que exista una clase llamada como en el config.yml
+
+        # TODO: Levantar estructura de la tabla de artículos del config, quizás un archivo results_config.yml
+        # Mi idea para este config es la siguiente:
+        # [NO] Definir en base.py una lista de campos elementales y clave ['abstract', 'title', 'keywords', ...]
+        # [OK] Pasarle esa lista al constructor de abc_def.py, que por defecto esté vacía, pero que si viene presente
+        #  que arme otro formato de salida de artículos en función de los parámetros de la lista (línea 105)
+        # [  ] Que el formato del results_config pueda tener N campos de usuario y un subcampo key para indicar
+        #  cuáles son campos clave de la salida del querier. Estos campos key tendrían relación con los elementos de la
+        #  lista indicada en la primera viñeta.
+        #  La idea de esto es que el usuario pueda definir un campo "Abstract" o "Resumen" para la tabla, pero que con
+        #  la referencia del "key" el script sepa que ambos textos corresponden al elemento "abstract" en las queries de
+        #  búsqueda.
+
         print("Cargando clases de repositorios")
-        print(self._cfg_dict)
         for repo_name in self._cfg_dict['repos'].keys():
             #try:
                 # La línea siguiente invoca a la clase dentro del package.
                 # Ejemplo: invoca al constructor ieee() de repos.ieee_def
                 if self._cfg_dict['repos'][repo_name]['enabled'] is True:
-                    repo = getattr(globals()[repo_name + '_def'], repo_name)(self._cfg_dict['repos'][repo_name],
-                                                                             self._cfg_dict['params'],
-                                                                             debug)
+                    repo = getattr(globals()[repo_name + '_def'], repo_name)(repo_params=self._cfg_dict['repos'][repo_name],
+                                                                             config_params=self._cfg_dict['params'],
+                                                                             debug=debug)
                     if repo is not None:
                         repo.say_hello()
                         if self._search_params['query'] == "" or self._search_params['query'] is None:

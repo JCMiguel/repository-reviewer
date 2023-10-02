@@ -9,6 +9,9 @@ from engine.indexer import Indexer
 
 def main() -> int:
     indexer = Indexer()
+    if indexer.configure() is not True:
+        print("ERROR: Indexer no configurado!")
+        return -1
 
     # Create the arguments parser
     parser = argparse.ArgumentParser()
@@ -46,6 +49,8 @@ def main() -> int:
     else:
         __debug_flag = False
 
+    # FIXME: Esta línea rompe si no se especifican argumentos de ejecución
+    # AttributeError: 'Namespace' object has no attribute 'func'
     data = args.func(args)
 
     print("Fin de ejecución")
