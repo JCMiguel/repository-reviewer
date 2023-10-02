@@ -31,7 +31,8 @@ class pubmed(abc_def.repo):
     '''
     Class to excecute searches in the NCBI (National Center for Biotechnology Information) PubMed database.
     Extends a generic abstract interface definition called abd_ref.repo to handle any API repository'''
-    def __init__(self, repo_params:dict, config_params:dict, debug:bool=False):
+
+    def __init__(self, repo_params: dict, config_params: dict, debug: bool = False):
         super().__init__(repo_params, config_params, debug)
         self.extend_dictionary(config_params)
 
@@ -85,20 +86,18 @@ class pubmed(abc_def.repo):
         # self.logger.debug("Search results: "+ str(results))
 
         if int(results['count']) > 0:
-            summ = self.__exec_Summary( results, idxs_dict, use_history=True )
+            summ = self.__exec_Summary(results, idxs_dict, use_history=True)
             # self.logger.debug("Summary results: "+ str(summ))
 
             articles = summ[pubmed._p_ids_summary]
             for art in articles:
                 pub_year = date_format(summ[art]['pubdate'])
-                self.add_to_dataframe( summ[art]['title'], pub_year )
-                pub_years_array.append( pub_year )
+                self.add_to_dataframe(title=summ[art]['title'], year=pub_year)
+                pub_years_array.append(pub_year)
         return self.build_report(pub_years_array)
 
-
     def parse_query(self, query: str) -> str:
-        self.logger.warning( "\n CUIDADO QUE pubmed.parse_query( ) NO ESTA IMPLEMENTADO pero si en [HACK] !\n")
-
+        self.logger.warning("\n CUIDADO QUE pubmed.parse_query( ) NO ESTA IMPLEMENTADO pero si en [HACK] !\n")
 
     def __exec_eSearch(self, index_constraint:dict=None, use_history=False, db='pubmed') -> dict:
         specific_params = {pubmed._p_usehistory: 'n', 'db': db}

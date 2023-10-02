@@ -1,3 +1,7 @@
+import customtkinter as ctk
+from tkinter import messagebox
+import json
+
 import engine
 from .base_page import *
 from .misc import execute
@@ -78,23 +82,36 @@ class QuerierPage(BasePageFrame):
                                                 command=self.search_btn_event)
         self.querier_search_btn.pack(side="top", padx=20, pady=10)
 
+
     def search_btn_event(self):
+        # TODO: Work In Progress
         texto = ""
-        texto += f'Title({self.querier_entry_title.get()}) - '
-        texto += f'Abs({self.querier_entry_abs.get()}) - '
-        texto += f'Key({self.querier_entry_key.get()}) - '
-        texto += f'Content({self.querier_entry_content.get()})'
-        if texto != 'Title() - Abs() - Key() - Content()':
-            print(f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")} - Buscando...\n')
+        texto += f'Title({self.querier_tab_entry_title.get()}) - '
+        texto += f'Abs({self.querier_tab_entry_abs.get()}) - '
+        texto += f'Key({self.querier_tab_entry_key.get()}) - '
+        texto += f'Content({self.querier_tab_entry_content.get()}) - '
+        texto += f'Query({self.querier_tab_entry_query.get()})'
+        if texto != 'Title() - Abs() - Key() - Content() - Query()':
+            print(f'{this_time()} - Buscando...\n')
             # TODO: FIXME: al invocar esta función, la pantalla se queda congelada hasta finalizar la búsqueda
-            querier_args = build_querier_dictionary(query="",
-                                                    content=self.querier_entry_content.get(),
-                                                    title=self.querier_entry_title.get(),
-                                                    abstract=self.querier_entry_abs.get(),
-                                                    keywords=self.querier_entry_key.get())
+            querier_args = build_querier_dictionary(query=self.querier_tab_entry_query.get(),
+                                                    content=self.querier_tab_entry_content.get(),
+                                                    title=self.querier_tab_entry_title.get(),
+                                                    abstract=self.querier_tab_entry_abs.get(),
+                                                    keywords=self.querier_tab_entry_key.get())
             querier = Querier(querier_args)
             querier.configure()
-            querier.search(debug=True)
+            try:
+                querier.search(debug=True)
+            except json.decoder.JSONDecodeError as jsonE:
+                messagebox.showerror(title="Error en query de búsqueda avanzada",
+                                     message=f"{this_time()} - Detalle:\n{jsonE.msg}")
+                print( this_time(), "- No se ha podido interpretar la query de búsqueda avanzada\nDetalle:", jsonE.msg )
+            # querier(debug: bool, query: str, content: str, from_year: str, title: str, arguments = None)
         else:
-            print(f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")} - Campos de búsqueda vacíos\n')
+            print(f'{this_time()} - Campos de búsqueda vacíos\n')
+            messagebox.showerror(title="Error", message="Campos de búsqueda vacíos")
 
+
+def this_time() -> str:
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")

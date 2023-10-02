@@ -15,8 +15,6 @@ class repo(ABC):
     """
         Abstract class for repository definition.
     """
-    articles_fn = 'results\\articles_table.csv'
-    articles_df = pd.DataFrame(columns=["Title", "Found in", "Year"])
 
     def __init__(self, repo_params: dict, config_params: dict, debug: bool = False):
         self.url = repo_params['url']
@@ -29,7 +27,7 @@ class repo(ABC):
         self.validate_dictionary()
         self.add_query_param(self.apikey, 'apikey')
         self.add_query_param('25', 'max_records_per_page')
-        self.articles_dataframe = pd.DataFrame(columns=["Title", "Found in", "Year"])
+        self.articles_dataframe = repo.init_dataframe(self.config_params)
 
         # Config de Logs
         logging.config.dictConfig(self.config_params['logs'])
@@ -37,6 +35,16 @@ class repo(ABC):
             self.logger = logging.getLogger(repo_params['logger'])
         else:
             self.logger = logging.getLogger('root')
+
+    @classmethod
+    def init_dataframe(self, config_params: dict = None):
+        order_of_columns = ['title', 'repo', 'year', 'abstract', 'pub_type', 'authors', 'doi']
+        # Renombro la columna, si es que existe
+        for column in config_params['results_format']:
+            if column.get('key') is not None and column.get('key') != '' and \
+                    column.get('column_name') is not None:
+                order_of_columns[order_of_columns.index(column['key'])] = column['column_name']
+        return pd.DataFrame(columns=order_of_columns)
 
     @abstractmethod
     def build_dictionary(self):
@@ -47,11 +55,16 @@ class repo(ABC):
         pass
 
     def validate_dictionary(self):
-        items = ["content", "title", "abstract", "keyword", "from_year",
-                 "to_year", "max_records_per_page", "query"]
-        for item in items:
-            if item not in self.dictionary:
-                raise ValueError(f"Missing field '{item}' in {type(self).__name__}'s dictionary!")
+        """
+            Esta función sirve solo para desarrollar nuevas clases de repositorios.
+            Realiza una validación de que estén todos los parámetros necesarios definidos en
+            la clase particular de Repo
+        """
+        __base_src_fields_def = ["content", "title", "abstract", "keyword", "from_year",
+                                 "to_year", "max_records_per_page", "query"]
+        for elem in __base_src_fields_def:
+            if elem not in self.dictionary:
+                raise ValueError(f"Missing field '{elem}' in {type(self).__name__}'s dictionary!")
         return True
 
     @abstractmethod
@@ -66,7 +79,6 @@ class repo(ABC):
 
         self.query_params[self.dictionary['query']] = self.parse_query(query)
 
-
     def add_query_param(self, value: str, value_type: str) -> None:
         """
             This pretends to do a conversion between args and api params
@@ -79,7 +91,6 @@ class repo(ABC):
         if value is not None:
             self.query_params[self.dictionary[value_type]] = value
 
-
     def get_config_param(self, name: str):
         """
         """
@@ -89,10 +100,6 @@ class repo(ABC):
         else:
             return ''
 
-    # @abstractmethod
-    # def validate_params():
-    #     pass
-
     @abstractmethod
     def search(self) -> Report:
         pass
@@ -101,38 +108,34 @@ class repo(ABC):
         self.logger.debug(str(self.debug))
         return self.debug
 
-    def add_to_dataframe(self, title: str = "", year: str = ""):
-        self.articles_dataframe.loc[len(self.articles_dataframe)] = [title, type(self).__name__, year]
+    def add_to_dataframe(self, title: str = "", year: str = "", abstract: str = "",
+                         pub_type: str = "", authors: str = "", doi: str = ""):
+        # init_dataframe -> order_of_columns = ['title', 'repo', 'year', 'abstract', 'pub_type', 'authors', 'doi']
+        self.articles_dataframe.loc[len(self.articles_dataframe)] = [title, type(self).__name__, year, abstract,
+                                                                     pub_type, authors, doi]
         pass
 
     def say_hello(self):
         self.logger.debug("Hola! Soy " + type(self).__name__)
 
-    ####### [FIXME]: quitarme_cuando_este_el_merge_Ok ###############
-    from datetime import datetime                                   #
-    def DataSearch_format_filename(id:str) -> str:                  #
-        fn = repo.articles_fn.split(sep='.')                        #
-        fn.insert( 1, "_"+ id +"." )                                #
-        fn = ''.join(fn)                                            #
-        return fn                                                   #
-                                                                    #
-    def export_csv(self):                                           #
-        # [FIXME]: el export queda dentro de DataSearch con esto ####
-        ID_Format = "%y%m%d%H%M%S"                                  #
-        id = datetime.now().strftime( ID_Format )                   #
-        results_fn = repo.DataSearch_format_filename( id )          #
-        #############################################################
-        repo.articles_df = pd.concat( [repo.articles_df, self.articles_dataframe], ignore_index=True, verify_integrity=False )
-        repo.articles_df.to_csv(results_fn, encoding='utf-8', index_label='ID')
-        self.logger.info("{} articles exported".format(len(self.articles_dataframe)))
-        # print("Soy " + type(self).__name__+ ", pero aun no se exportar a CSV! Toy chiquito :3")
+    @classmethod
+    def export_csv(self, source_df:pd.DataFrame, filename:str):
+        source_df.to_csv(filename, encoding='utf-8', index_label='ID', sep='^')
+        if hasattr(self, 'logger'):
+            self.logger.info("{} articles exported".format(len(source_df)))
+
+    def concat_to_dataframe(self, main_df:pd.DataFrame) -> pd.DataFrame:
+        if main_df is None:
+            return self.articles_dataframe
+        self.logger.info("{} articles added".format(len(self.articles_dataframe)))
+        return pd.concat( [main_df, self.articles_dataframe], ignore_index=True, verify_integrity=False )
 
     def export_dataframe(self=None):
         return repo.articles_df
 
     def build_report(self, publication_dates_array) -> Report:
         time_span = None
-        if (publication_dates_array is None):
+        if publication_dates_array is None:
             method = self.__class__.__name__ +".build_report( )"
             raise ValueError("On "+method+": publication_dates_array parameter must be a non-empty array")
         from_year = self.query_params.get( self.dictionary['from_year'] )
