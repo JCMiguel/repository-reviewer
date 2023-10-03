@@ -69,13 +69,14 @@ class QuerierPage(BasePageFrame):
         self.querier_entry_content.pack(side="top", padx=20,  pady=5, fill="x")
 
         # Tab - Búsqueda avanzada
-        self.querier_content_lbl = ctk.CTkLabel(second_tab, text="Query", anchor="w",
+        self.querier_query_lbl = ctk.CTkLabel(second_tab, text="Query", anchor="w",
                                                 font=ctk.CTkFont(weight="bold"))
-        self.querier_content_lbl.pack(side="top", anchor="w", padx=20, pady=0)
-        self.querier_content_lbl = ctk.CTkTextbox(second_tab,
-                                                  height=226, activate_scrollbars=True,
-                                                  border_color="dark grey", border_width=2)
-        self.querier_content_lbl.pack(side="top", padx=20, pady=5, fill="both")
+        self.querier_query_lbl.pack(side="top", anchor="w", padx=20, pady=0)
+        self.querier_entry_query = ctk.CTkEntry(second_tab, placeholder_text=def_txt)
+                                 # ctk.CTkTextbox(second_tab,
+                                 # [TODO]         height=226, activate_scrollbars=True,
+                                 #                border_color="dark grey", border_width=2)
+        self.querier_entry_query.pack(side="top", padx=20, pady=5, fill="both")
 
         # Common (out of tabs)
         self.querier_search_btn = ctk.CTkButton(self, text="Search!",
@@ -86,19 +87,19 @@ class QuerierPage(BasePageFrame):
     def search_btn_event(self):
         # TODO: Work In Progress
         texto = ""
-        texto += f'Title({self.querier_tab_entry_title.get()}) - '
-        texto += f'Abs({self.querier_tab_entry_abs.get()}) - '
-        texto += f'Key({self.querier_tab_entry_key.get()}) - '
-        texto += f'Content({self.querier_tab_entry_content.get()}) - '
-        texto += f'Query({self.querier_tab_entry_query.get()})'
+        texto += f'Title({self.querier_entry_title.get()}) - '
+        texto += f'Abs({self.querier_entry_abs.get()}) - '
+        texto += f'Key({self.querier_entry_key.get()}) - '
+        texto += f'Content({self.querier_entry_content.get()}) - '
+        texto += f'Query({self.querier_entry_query.get()})'
         if texto != 'Title() - Abs() - Key() - Content() - Query()':
             print(f'{this_time()} - Buscando...\n')
             # TODO: FIXME: al invocar esta función, la pantalla se queda congelada hasta finalizar la búsqueda
-            querier_args = build_querier_dictionary(query=self.querier_tab_entry_query.get(),
-                                                    content=self.querier_tab_entry_content.get(),
-                                                    title=self.querier_tab_entry_title.get(),
-                                                    abstract=self.querier_tab_entry_abs.get(),
-                                                    keywords=self.querier_tab_entry_key.get())
+            querier_args = build_querier_dictionary(query=self.querier_entry_query.get(),
+                                                    content=self.querier_entry_content.get(),
+                                                    title=self.querier_entry_title.get(),
+                                                    abstract=self.querier_entry_abs.get(),
+                                                    keywords=self.querier_entry_key.get())
             querier = Querier(querier_args)
             querier.configure()
             try:

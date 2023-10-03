@@ -35,8 +35,8 @@ class DataSearch:
         if id is None:
             id = self._id
         fn = DataSearch.format_filename(id)
-        if path.isfile( fn ):
-            self._fn = fn
+        #if path.isfile( fn ):
+        self._fn = fn
         return self._fn
 
 
