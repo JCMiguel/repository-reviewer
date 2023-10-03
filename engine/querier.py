@@ -114,5 +114,5 @@ class Querier(DataSearch, BasicEngine):
             # except Exception:
             #     traceback.print_exc()
         # NOTE: Esta forma de invocar al export no es la mas prolija: modulo.clase.metodo
-        abc_def.repo.export_csv( self._articles_dataframe, BasicEngine.articles_fn )
+        abc_def.repo.export_csv( self._articles_dataframe, self.get_result_filename() )
         History.Add(self)

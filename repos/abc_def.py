@@ -130,6 +130,9 @@ class repo(ABC):
         self.logger.info("{} articles added".format(len(self.articles_dataframe)))
         return pd.concat( [main_df, self.articles_dataframe], ignore_index=True, verify_integrity=False )
 
+    def export_dataframe(self=None):
+        return repo.articles_df
+
     def build_report(self, publication_dates_array) -> Report:
         time_span = None
         if publication_dates_array is None:
