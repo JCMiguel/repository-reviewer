@@ -10,6 +10,8 @@ from datetime import datetime
 from abc import ABC, abstractmethod
 
 
+RESULT_SEPARATOR = '^'
+
 # Clase abstracta que define las características básicas de un repositorio
 class repo(ABC):
     """
@@ -120,7 +122,7 @@ class repo(ABC):
 
     @classmethod
     def export_csv(self, source_df:pd.DataFrame, filename:str):
-        source_df.to_csv(filename, encoding='utf-8', index_label='ID', sep='^')
+        source_df.to_csv(filename, encoding='utf-8', index_label='ID', sep=RESULT_SEPARATOR)
         if hasattr(self, 'logger'):
             self.logger.info("{} articles exported".format(len(source_df)))
 

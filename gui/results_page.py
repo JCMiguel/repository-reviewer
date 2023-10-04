@@ -1,8 +1,9 @@
+from repos.abc_def import RESULT_SEPARATOR
 from .base_page import *
 from tkinter import ttk
 import pandas as pd
 
-grouping_column_title = 'Found in'
+grouping_column_title = 'Repositorio'
 
 
 def get_categories_dict(df:pd.DataFrame) -> {}:
@@ -15,7 +16,7 @@ def get_categories_dict(df:pd.DataFrame) -> {}:
     return category_mapper
 
 def load_dataframe(filename:str) -> pd.DataFrame:
-    df = pd.read_csv( filename, sep=',', index_col='ID')
+    df = pd.read_csv( filename, sep=RESULT_SEPARATOR, index_col='ID')
     df = df.fillna('')
     return df
 
