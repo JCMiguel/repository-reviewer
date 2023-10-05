@@ -8,7 +8,10 @@ El propósito de esta herramienta es asistir en los procesos de búsqueda y mape
 
 Work in Progress... :)
 
-![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/JCMiguel/hbs/hbs_python/docs/classes.wsd)
+![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/JCMiguel/repository-reviewer/main/docs/classes.wsd)
+
+![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/JCMiguel/repository-reviewer/main/docs/historic.wsd)
+
 
 ## Configuración
 

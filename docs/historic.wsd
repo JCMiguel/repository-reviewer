@@ -39,4 +39,5 @@ class historic.Search {
  +report()
  +tag()
 }
+
 @enduml
