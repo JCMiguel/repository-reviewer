@@ -6,11 +6,12 @@ El propósito de esta herramienta es asistir en los procesos de búsqueda y mape
 
 ## Estructura de clases
 
-Work in Progress... :)
 
-![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/JCMiguel/repository-reviewer/main/docs/classes.wsd)
+![Repo - Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/JCMiguel/repository-reviewer/main/docs/repo.wsd)
 
-![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/JCMiguel/repository-reviewer/main/docs/historic.wsd)
+![Engine - Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/JCMiguel/repository-reviewer/main/docs/engine.wsd)
+
+![Historic - Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/JCMiguel/repository-reviewer/main/docs/historic.wsd)
 
 
 ## Configuración

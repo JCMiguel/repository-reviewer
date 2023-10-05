@@ -1,43 +1,154 @@
 @startuml
 
-package historic{
-  Report --o Search
-  History "1  " o-- "0.." Search
+left to right direction
+
+package repos {
+  abstract class Repo {
+      -- Atributes --
+      - url : str
+      - apikey : str
+      - dictionary : dict
+      - query_params : dict
+      - config_params : dict
+      - debug : bool 
+      - articles_dataframe : pd.Dataframe
+
+      -- Contructor --
+      - __init__(self, repo_params: dict, config_params: dict, debug: bool = False)
+
+      -- Methods --
+      + build_dictionary(self)
+      + validate_dictionary(self)
+      + parse_query(self, query: str) : str
+      + load_query(self, query: str) : None
+      + add_query_param(self, value: str, value_type: str) : None
+      + get_config_param(self, name: str)
+      + search(self) : Report
+      + debug_enabled(self)
+      + add_to_dataframe(self, title: str = "", year: str = "", abstract: str = "",
+                         pub_type: str = "", authors: str = "", doi: str = "")
+      + concat_to_dataframe(self, main_df:pd.DataFrame) : pd.DataFrame
+      + export_dataframe(self=None)
+      + build_report(self, publication_dates_array) : Report
+
+      -- Class methods --
+      + init_dataframe(self, config_params: dict = None)
+      + export_csv(self, source_df:pd.DataFrame, filename:str)
+
+    ~search(): Report
+  }
 }
 
-Querier o-- Repo
-Querier o-- History
+package historic{
+  class History {
+      -- Atributes --
+      - GLOBAL_RESULTS_FILENAME : str
+      - __df : pd.Dataframe
+
+      -- Static methods --
+      + Data(force_loading : bool = False) : pd.DataFrame
+      + Add(search : DataSearch)
+      + Get(value = 0)
+      + Get_by_id(id : int) : pd.Series
+      + Get_by_filter(filter : list) : pd.DataFrame
+      + Get_previous(index : int = 0) : pd.Series
+      + Get_by_index(index : int) : pd.Series
+      + Get_by_matching(match : str, field_names : list = []) : pd.Series
+      + Filter_date(d_from : str = None, d_to : str = None) : list
+      + Get_by_date(date_range : str, sep = ',') : pd.DataFrame
+      - __load_dataframe() : pd.DataFrame
+  }
+
+  class DataSearch{
+      -- Atributes --
+      - RESULTS_BASE_FILENAME : str
+      - ID_Format : str
+
+      -- Contructor --
+      - __init__(self, search_params: dict)
+
+      -- Methods --
+      + get_result_filename(self, id : str = None) : str
+      + append_partial_res(self, results : Report)
+      + report(self) : Report
+      + tag(self, string_tag)
+      + to_csv_lines(self, with_header : bool = False) : list
+      + to_dict_format(self, for_dataFrame : bool = False) : dict
+      - __repr__(self) : str
+      - __str__(self) : str
+
+
+      -- Static methods --
+      + format_filename(id:str) : str
+  }
+
+  class Report{
+      -- Atributes --
+      - separator : str
+      - __logger : logging.Logger
+
+      -- Contructor --
+      - __init__(self, name, logger : logging.Logger = None)
+
+      -- Methods --
+      + get_name_str(self) : str
+      + process_dates(self, publication_dates, time_span : tuple = None)
+      + calculate_percentages(self)
+      + merge_reports(self, other)
+      - __repr__(self)
+      - __str__(self) : str
+      + at(self, item_name)
+      # _merge_when_anyone_null(self, other, item)
+      # _merge_list_or_tuple(self, other, item)
+      # _merge_tuple(self, other, item)
+      # _merge_str(self, other, item)
+      # _merge_int(self, other, item)
+      # _process_dates_distribution(self, years, span : tuple)
+      # _export_to_csv_line(self) : str
+      # _export_to_csv_header(self) : str
+      # _get_periods_arrays(self, span : tuple)
+
+      -- Static methods --
+      + Import(report_items:dict, name = None)
+  }
+
+  class Compound_Report {
+      -- Methods --
+      + get_name_str(self) : str
+      # _merge_str(self, other : Report, item)
+      # _merge_str(self, other : Report, item)
+
+      -- Static methods --
+      + Import(report_items : dict, name = None)
+  }
+}
+
+package engine {
+  class QuerierEngine {
+    -- Atributes --
+    - __config_loaded : bool
+    # _articles_dataframe : pd.Dataframe
+
+    -- Contructor --
+    - __init__(self, search_params: dict)
+
+    -- Public methods --
+    + configure(self)
+    + search(self, debug: bool)
+  }
+}
+
+Report --o DataSearch
+History "1  " o-- "0.." DataSearch
+
+DataSearch <|-- QuerierEngine
+
+QuerierEngine o-- "0.." Repo
+QuerierEngine o-- History
 Repo --> Report
 
+Report <|-- Compound_Report
 
-class Repo {
- ~search(): Report
-}
 
-class Querier
-
-class historic.History {
- -
- +Add( Search )
- +Get( id )
- +Get( index )
- +Get( strMatch )
-}
-
-class historic.Report{
- -counter
- -timeStats
- #print()
-}
-
-class historic.Search {
- - id
- - results
- - stringParams
- - reportData
- +readResults()
- +report()
- +tag()
-}
 
 @enduml

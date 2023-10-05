@@ -1,0 +1,62 @@
+@startuml
+
+BasicEngine <|-- QuerierEngine
+BasicEngine <|-- IndexerEngine
+
+package engine {
+  class BasicEngine {
+      -- Atributes --
+      # _cfg_dict : dict
+      - articles_fn : str
+      - __repo_config_filename : str
+      - __params_config_filename : str
+
+      -- Contructor --
+      - __init__(self)
+
+      -- Methods --
+      # _configure_repos(self) : bool
+      # _configure_params(self) : bool
+      - __read_yaml(self, file_path: str) : bool
+  }
+
+  class QuerierEngine {
+      -- Atributes --
+      - __config_loaded : bool
+      # _articles_dataframe : pd.Dataframe
+
+      -- Contructor --
+      - __init__(self, search_params: dict)
+
+      -- Public methods --
+      + configure(self)
+      + search(self, debug: bool)
+  }
+
+  class IndexerEngine {
+      -- Atributes --
+      - __base_dict_df : dict
+      - INDEX_STORAGE_FILE : str
+
+      -- Contructors --
+      - __init__(self)
+
+      -- Public methods --
+      + configure(self) : bool
+      + get_index_card(self, args) : int
+      + edit_index_card(self, args) : int
+      + delete_index_card(self, args) : int
+      + save_index_card(self, args) : int
+
+      -- Private methods --
+      - __input_a_date(self, message: str) : str
+      - __input_a_boolean(self, message: str) : bool
+      - __input_a_text(self, message: str) : str
+      - __input_a_number(self, message: str) : str
+      - __index_an_article(self) : dict
+      - __load_dataframe(self, filename: str) : pd.DataFrame
+      - __match_with_filter(self, args: dict, ficha: pd.DataFrame, index: int) : bool
+  }
+}
+
+@enduml
