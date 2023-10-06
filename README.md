@@ -16,7 +16,14 @@ El propósito de esta herramienta es asistir en los procesos de búsqueda y mape
 
 ## Configuración
 
-Work in Progress... :)
+1. Renombrar los archivos template_repo_config.yml y template_params_config.yml como repo_config.yml y params_config.yml, respectivamente.
+
+2. Habilitar y deshabilitar los repositorios deseados en repo_config.yml cambiando el atributo _enabled_. Establecer en _true_ para habilitar y en _false_ para desactivar.
+
+3. Agregar las API Key correspondientes. Es necesario para esto crear una cuenta de desarrollador en cada repositorio.
+
+4. Agregar una dirección de correo en params_config.yml. Esto es requerido para realizar búsquedas en Pubmed.
+
 
 ## Ejemplos de uso
 
