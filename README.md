@@ -4,6 +4,10 @@ Shield: [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
 
 El propósito de esta herramienta es asistir en los procesos de búsqueda y mapeo sistemático (SMS) de la literatura vigente.
 
+## Requisitos
+
+Esta aplicación necesita tener instalado el intérprete Python 3.9 para funcionar correctamente. Se deben instalar además todas las dependencias indicadas en el archivo _requirements.txt_.
+
 ## Estructura de clases
 
 
