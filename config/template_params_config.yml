@@ -36,7 +36,7 @@ params:
       details:        'Tìtulo completo del artículo.'
     - column_name:  'Autor(es)'
       type:           'string'
-      key:            'author'
+      key:            'authors'
       details:        'Autor(es) del artículo en cuestión.'
     - column_name:  'Repositorio'
       type:           'string'
